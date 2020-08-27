@@ -1,13 +1,13 @@
 # SpiGUI
 A comprehensive inventory menu API for Spigot with pages support. Supports Bukkit/Spigot 1.7 - 1.16 (see [Version Notes](#version-notes)).
 <p>
-  <a href="https://github.com/SamJakob/SpiGUI/blob/master/LICENSE">
+  <a target="_blank" href="https://github.com/SamJakob/SpiGUI/blob/master/LICENSE">
     <img alt="License" src="https://img.shields.io/github/license/SamJakob/SpiGUI?style=for-the-badge">
   </a>
   <a href="#">
     <img alt="No Dependencies" src="https://img.shields.io/badge/dependencies-none-green?color=orange&style=for-the-badge">
   </a>
-  <a href="https://jitpack.io/#com.samjakob/SpiGUI">
+  <a target="_blank" href="https://jitpack.io/#com.samjakob/SpiGUI">
     <img alt="JitPack" src="https://img.shields.io/badge/dynamic/json?color=red&label=JitPack&query=%24.version&url=https%3A%2F%2Fjitpack.io%2Fapi%2Fbuilds%2Fcom.samjakob%2FSpiGUI%2FlatestOk&style=for-the-badge">
   </a>
 </p>
