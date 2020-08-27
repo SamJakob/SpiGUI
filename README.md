@@ -7,8 +7,14 @@ A comprehensive inventory menu API for Spigot with pages support. Supports Bukki
   <a href="#">
     <img alt="No Dependencies" src="https://img.shields.io/badge/dependencies-none-green?color=orange&style=for-the-badge">
   </a>
+</p>
+
+<p>
   <a target="_blank" href="https://jitpack.io/#com.samjakob/SpiGUI">
     <img alt="JitPack" src="https://img.shields.io/badge/dynamic/json?color=red&label=JitPack&query=%24.version&url=https%3A%2F%2Fjitpack.io%2Fapi%2Fbuilds%2Fcom.samjakob%2FSpiGUI%2FlatestOk&style=for-the-badge">
+  </a>
+  <a target="_blank" href="https://javadoc.jitpack.io/com/samjakob/SpiGUI/latest/javadoc/index.html">
+    <img alt="JavaDoc" src="https://img.shields.io/badge/dynamic/json?color=blue&label=JavaDoc&query=%24.version&url=https%3A%2F%2Fjitpack.io%2Fapi%2Fbuilds%2Fcom.samjakob%2FSpiGUI%2FlatestOk&style=for-the-badge">
   </a>
 </p>
 
