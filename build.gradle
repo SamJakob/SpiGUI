@@ -37,3 +37,30 @@ task testJar(type: Jar) {
 
     archiveBaseName.set("SpiGUITest")
 }
+
+task sourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.java.sourceDirectories
+}
+
+task classesJar(type: Jar) {
+    from sourceSets.main.output.classesDirs
+}
+
+task documentation(type: Javadoc) {
+    source = sourceSets.main.java.sourceDirectories
+    classpath += configurations.compileClasspath
+
+    options.memberLevel = JavadocMemberLevel.PRIVATE
+}
+
+task javadocJar(type: Jar, dependsOn: documentation) {
+    archiveClassifier.set('javadoc')
+    from documentation.destinationDir
+}
+
+artifacts {
+    archives classesJar
+    archives javadocJar
+    archives sourcesJar
+}

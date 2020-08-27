@@ -108,12 +108,12 @@ public class SpiGUI {
      * getter (or a public static field - dealer's choice) and you create inventories through
      * this class by calling {@link #create(String, int)} on the static {@link SpiGUI} field.
      *
-     * A lengthy justification of this is provided as an implementation note, should you care
-     * to read it.
+     * A lengthy justification of this is provided below, should you care to read it.
      *
      * <br><br>
      *
-     * @implNote The association with a plugin is an important design decision that was overlooked
+     * <p><b>Note:</b></p>
+     * The association with a plugin is an important design decision that was overlooked
      * in this library's predecessor, SpigotPaginatedGUI.
      * <br><br>
      * This library is not designed to act as a standalone plugin because that is inconvenient
@@ -204,6 +204,7 @@ public class SpiGUI {
      *
      * @param name The display name of the inventory.
      * @param rows The number of rows the inventory should have per page.
+     * @param tag The inventory's tag.
      * @return The created inventory.
      */
     public SGMenu create(String name, int rows, String tag) {

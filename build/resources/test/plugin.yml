@@ -1,7 +1,0 @@
-name: SpiGUITest
-version: 1.0.0
-main: com.samjakob.spiguitest.SpiGUITest
-author: SamJakob
-commands:
-  spigui:
-    description: Opens a test SpiGUI.

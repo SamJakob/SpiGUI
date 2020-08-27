@@ -21,7 +21,7 @@ import java.util.function.Predicate;
  *
  * The intention is that this class will be used in builder form - for example;
  * <pre>
- * new ItemBuilder(Material.SPONGE).name("&cAlmighty sponge").amount(21).build();
+ * new ItemBuilder(Material.SPONGE).name("&amp;cAlmighty sponge").amount(21).build();
  * </pre>
  *
  * @author SamJakob
@@ -97,7 +97,7 @@ public class ItemBuilder {
      * {@link #name(String)} method as they will be in their translated sectional symbol (§) form,
      * rather than their 'coded' form (&amp;).
      *
-     * For example, if you used {@link #name(String)} to set the name to '&cMy Item', the output of this
+     * For example, if you used {@link #name(String)} to set the name to '&amp;cMy Item', the output of this
      * method would be '§cMy Item'
      *
      * @return The item's display name as returned from its {@link ItemMeta}.
@@ -315,7 +315,7 @@ public class ItemBuilder {
      * Example:
      * <pre>
      * // Renames the ItemStack, if and only if, the stack's type is Acacia Doors.
-     * ifThen(stack -> stack.getType() == Material.ACACIA_DOOR, stack -> stack.name("&aMagic Door"));
+     * ifThen(stack -&gt; stack.getType() == Material.ACACIA_DOOR, stack -&gt; stack.name("&amp;aMagic Door"));
      * </pre>
      *
      * @param ifTrue The condition upon which, <code>then</code> should be performed.
