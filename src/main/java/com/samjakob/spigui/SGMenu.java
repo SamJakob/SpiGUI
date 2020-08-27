@@ -3,8 +3,8 @@ package com.samjakob.spigui;
 import com.samjakob.spigui.buttons.SGButton;
 import com.samjakob.spigui.pagination.SGPaginationButtonBuilder;
 import com.samjakob.spigui.pagination.SGPaginationButtonType;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -14,9 +14,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
- * SGInventory is used to implement the library's GUIs.
+ * SGMenu is used to implement the library's GUIs.
  * <br><br>
  * This is a Minecraft 'inventory' that contains items which can have
  * programmable actions performed when they are clicked. Additionally,
@@ -31,7 +32,7 @@ import java.util.Map;
  * The reason for this is explained in the {@link SpiGUI#SpiGUI(JavaPlugin)
  * class constructor implementation notes.
  */
-public class SGInventory implements InventoryHolder {
+public class SGMenu implements InventoryHolder {
 
     private final JavaPlugin owner;
     private final SpiGUI spiGUI;
@@ -48,9 +49,11 @@ public class SGInventory implements InventoryHolder {
     private Boolean enableAutomaticPagination;
 
     private SGPaginationButtonBuilder paginationButtonBuilder;
+    private Consumer<SGMenu> onClose;
+    private Consumer<SGMenu> onPageChange;
 
     /**
-     * Used by the library internally to construct an SGInventory.
+     * Used by the library internally to construct an SGMenu.
      * The name parameter is color code translated.
      *
      * @param owner The plugin the inventory should be associated with.
@@ -59,7 +62,7 @@ public class SGInventory implements InventoryHolder {
      * @param rowsPerPage The number of rows per page.
      * @param tag The inventory's tag.
      */
-    SGInventory(JavaPlugin owner, SpiGUI spiGUI, String name, int rowsPerPage, String tag) {
+    SGMenu(JavaPlugin owner, SpiGUI spiGUI, String name, int rowsPerPage, String tag) {
         this.owner = owner;
         this.spiGUI = spiGUI;
         this.name = ChatColor.translateAlternateColorCodes('&', name);
@@ -353,7 +356,7 @@ public class SGInventory implements InventoryHolder {
      * @return The {@link SGButton} that was in that slot or null if the slot was invalid or if there was no button that slot.
      */
     public SGButton getButton(int slot) {
-        if (slot < 0 || slot >= items.size())
+        if (slot < 0 || slot > getHighestFilledSlot())
             return null;
 
         return items.get(slot);
@@ -395,6 +398,7 @@ public class SGInventory implements InventoryHolder {
      */
     public void setCurrentPage (int page) {
         this.currentPage = page;
+        this.onPageChange.accept(this);
     }
 
     /**
@@ -436,6 +440,7 @@ public class SGInventory implements InventoryHolder {
         if (currentPage < getMaxPage() - 1) {
             currentPage++;
             refreshInventory(viewer);
+            this.onPageChange.accept(this);
             return true;
         } else {
             return false;
@@ -454,6 +459,7 @@ public class SGInventory implements InventoryHolder {
         if (currentPage > 0) {
             currentPage--;
             refreshInventory(viewer);
+            this.onPageChange.accept(this);
             return true;
         } else {
             return false;
@@ -532,17 +538,55 @@ public class SGInventory implements InventoryHolder {
         items.entrySet().removeIf(item -> !isStickiedSlot(item.getKey()));
     }
 
+    /// EVENTS ///
+
+    /**
+     * @see #setOnClose(Consumer)
+     * @return The action to be performed on close.
+     */
+    public Consumer<SGMenu> getOnClose() {
+        return this.onClose;
+    }
+
+    /**
+     * Used to set an action to be performed on inventory close without
+     * registering an {@link org.bukkit.event.inventory.InventoryCloseEvent} specifically
+     * for this inventory.
+     *
+     * @param onClose The action to be performed on close.
+     */
+    public void setOnClose(Consumer<SGMenu> onClose) {
+        this.onClose = onClose;
+    }
+
+    /**
+     * @see #setOnPageChange(Consumer)
+     * @return The action to be performed on page change.
+     */
+    public Consumer<SGMenu> getOnPageChange() {
+        return this.onPageChange;
+    }
+
+    /**
+     * Used to set an action to be performed on inventory page change.
+     *
+     * @param onPageChange The action to be performed on page change.
+     */
+    public void setOnPageChange(Consumer<SGMenu> onPageChange) {
+        this.onPageChange = onPageChange;
+    }
+
     /// INVENTORY API ///
 
     public void refreshInventory(HumanEntity viewer) {
-        // If the open inventory isn't an SGInventory - or if it isn't this inventory, do nothing.
+        // If the open inventory isn't an SGMenu - or if it isn't this inventory, do nothing.
         if (
-                !(viewer.getOpenInventory().getTopInventory().getHolder() instanceof SGInventory)
+                !(viewer.getOpenInventory().getTopInventory().getHolder() instanceof SGMenu)
                 || viewer.getOpenInventory().getTopInventory().getHolder() != this
         ) return;
 
         // If the new size is different, we'll need to open a new inventory.
-        if (viewer.getOpenInventory().getTopInventory().getSize() != getPageSize()) {
+        if (viewer.getOpenInventory().getTopInventory().getSize() != getPageSize() + (getMaxPage() > 0 ? 9 : 0)) {
             viewer.openInventory(getInventory());
             return;
         }

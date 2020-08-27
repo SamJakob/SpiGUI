@@ -1,8 +1,8 @@
 package com.samjakob.spigui;
 
 import com.samjakob.spigui.buttons.SGButton;
-import com.samjakob.spigui.inventory.SGInventoryListener;
-import com.samjakob.spigui.inventory.SGOpenInventory;
+import com.samjakob.spigui.menu.SGMenuListener;
+import com.samjakob.spigui.menu.SGOpenMenu;
 import com.samjakob.spigui.item.ItemBuilder;
 import com.samjakob.spigui.pagination.SGPaginationButtonBuilder;
 import org.bukkit.Material;
@@ -55,7 +55,7 @@ public class SpiGUI {
      * called when building pagination buttons for inventory GUIs.
      *
      * This can be overridden per-inventory, as well as per-plugin using the appropriate methods
-     * on either the inventory class ({@link SGInventory}) or your plugin's instance of
+     * on either the inventory class ({@link SGMenu}) or your plugin's instance of
      * {@link SpiGUI}.
      */
     private SGPaginationButtonBuilder defaultPaginationButtonBuilder = (type, inventory) -> {
@@ -130,8 +130,8 @@ public class SpiGUI {
      * also be registered with the plugin too.
      * <br><br>
      * Thus, the design whereby this class is registered as a static field on a {@link JavaPlugin}
-     * instance and serves as a proxy for creating ({@link SGInventory}) inventories and an instance
-     * of the {@link SGInventoryListener} registered with that plugin seemed like a good way to try
+     * instance and serves as a proxy for creating ({@link SGMenu}) inventories and an instance
+     * of the {@link SGMenuListener} registered with that plugin seemed like a good way to try
      * and minimize the inconvenience of the approach.
      *
      * @param plugin The plugin using SpiGUI.
@@ -140,7 +140,7 @@ public class SpiGUI {
         this.plugin = plugin;
 
         plugin.getServer().getPluginManager().registerEvents(
-            new SGInventoryListener(plugin, this), plugin
+            new SGMenuListener(plugin, this), plugin
         );
     }
 
@@ -164,7 +164,7 @@ public class SpiGUI {
      * @param rows The number of rows the inventory should have per page.
      * @return The created inventory.
      */
-    public SGInventory create(String name, int rows) {
+    public SGMenu create(String name, int rows) {
         return create(name, rows, null);
     }
 
@@ -206,8 +206,8 @@ public class SpiGUI {
      * @param rows The number of rows the inventory should have per page.
      * @return The created inventory.
      */
-    public SGInventory create(String name, int rows, String tag) {
-        return new SGInventory(plugin, this, name, rows, tag);
+    public SGMenu create(String name, int rows, String tag) {
+        return new SGMenu(plugin, this, name, rows, tag);
     }
 
     /**
@@ -268,17 +268,17 @@ public class SpiGUI {
      * Finds a list of all open inventories with a given tag along with the
      * player who has that inventory open.
      *
-     * This returns a list of {@link SGOpenInventory} which simply stores the
+     * This returns a list of {@link SGOpenMenu} which simply stores the
      * opened inventory along with the player viewing the open inventory.
      *
      * Supplying null as the tag value will get all untagged inventories.
      *
      * @param tag The tag to search for.
-     * @return A list of {@link SGOpenInventory} whose inventories have the specified tag.
+     * @return A list of {@link SGOpenMenu} whose inventories have the specified tag.
      */
-    public List<SGOpenInventory> findOpenWithTag(String tag) {
+    public List<SGOpenMenu> findOpenWithTag(String tag) {
 
-        List<SGOpenInventory> foundInventories = new ArrayList<>();
+        List<SGOpenMenu> foundInventories = new ArrayList<>();
 
         // Loop through every online player...
         for (Player player : plugin.getServer().getOnlinePlayers()) {
@@ -287,13 +287,13 @@ public class SpiGUI {
                 // ...get that top inventory.
                 Inventory topInventory = player.getOpenInventory().getTopInventory();
 
-                // If the top inventory is an SGInventory,
-                if (topInventory.getHolder() != null && topInventory.getHolder() instanceof SGInventory) {
-                    // and the SGInventory has the tag matching the one we're checking for,
-                    SGInventory inventory = (SGInventory) topInventory.getHolder();
+                // If the top inventory is an SGMenu,
+                if (topInventory.getHolder() != null && topInventory.getHolder() instanceof SGMenu) {
+                    // and the SGMenu has the tag matching the one we're checking for,
+                    SGMenu inventory = (SGMenu) topInventory.getHolder();
                     if (inventory.getTag().equals(tag))
-                        // add the SGInventory to our list of found inventories.
-                        foundInventories.add(new SGOpenInventory(inventory, player));
+                        // add the SGMenu to our list of found inventories.
+                        foundInventories.add(new SGOpenMenu(inventory, player));
                 }
             }
         }

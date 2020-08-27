@@ -3,10 +3,10 @@ package com.samjakob.spigui.buttons;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * An SGButton represents a clickable item in an SGInventory (GUI).
+ * An SGButton represents a clickable item in an SGMenu (GUI).
  * It consists of an icon ({@link ItemStack}) and a listener ({@link SGButton}).
  *
- * When the icon is clicked in the SGInventory, the listener is called, thus allowing
+ * When the icon is clicked in the SGMenu, the listener is called, thus allowing
  * for rudimentary menus to be built by displaying icons and overriding their behavior.
  *
  * This somewhat resembles the point-and-click nature of Graphical User Interfaces (GUIs)
@@ -59,7 +59,7 @@ public class SGButton {
 
     /**
      * Returns the {@link ItemStack} that will be used as the SGButton's icon in the
-     * SGInventory (GUI).
+     * SGMenu (GUI).
      *
      * @return The icon ({@link ItemStack}) that will be used to represent the button.
      */

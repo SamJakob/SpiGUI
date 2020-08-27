@@ -1,6 +1,6 @@
 package com.samjakob.spigui.item;
 
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -287,12 +287,16 @@ public class ItemBuilder {
      * If the item has {@link SkullMeta} (i.e. if the item is a skull), this can
      * be used to set the skull's owner (i.e. the player the skull represents.)
      *
+     * This also sets the skull's data value to 3 for 'player head', as setting
+     * the skull's owner doesn't make much sense for the mob skulls.
+     *
      * @param name The name of the player the skull item should resemble.
      * @return The {@link ItemBuilder} instance.
      */
     public ItemBuilder skullOwner(String name) {
         if (!(stack.getItemMeta() instanceof SkullMeta)) return this;
 
+        stack.setDurability((byte) 3);
         SkullMeta meta = (SkullMeta) stack.getItemMeta();
         meta.setOwner(name);
         stack.setItemMeta(meta);
