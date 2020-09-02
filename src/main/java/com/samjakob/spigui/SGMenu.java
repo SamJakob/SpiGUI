@@ -615,9 +615,11 @@ public class SGMenu implements InventoryHolder {
         if (isAutomaticPaginationEnabled() != null) {
             isAutomaticPaginationEnabled = isAutomaticPaginationEnabled();
         }
+        
+        boolean needsPagination = getMaxPage() > 0 && isAutomaticPaginationEnabled;
 
         Inventory inventory = Bukkit.createInventory(this, (
-            (getMaxPage() > 0 && isAutomaticPaginationEnabled)
+            (needsPagination)
                 // Pagination enabled: add the bottom toolbar row.
                 ? getPageSize() + 9
                 // Pagination not required or disabled.
@@ -644,19 +646,21 @@ public class SGMenu implements InventoryHolder {
         }
 
         // Render the pagination items.
-        SGPaginationButtonBuilder paginationButtonBuilder = spiGUI.getDefaultPaginationButtonBuilder();
-        if (getPaginationButtonBuilder() != null) {
-            paginationButtonBuilder = getPaginationButtonBuilder();
-        }
+        if (needsPagination) {
+            SGPaginationButtonBuilder paginationButtonBuilder = spiGUI.getDefaultPaginationButtonBuilder();
+            if (getPaginationButtonBuilder() != null) {
+                paginationButtonBuilder = getPaginationButtonBuilder();
+            }
 
-        int pageSize = getPageSize();
-        for (int i = pageSize; i < pageSize + 9; i++) {
-            int offset = i - pageSize;
+            int pageSize = getPageSize();
+            for (int i = pageSize; i < pageSize + 9; i++) {
+                int offset = i - pageSize;
 
-            SGButton paginationButton = paginationButtonBuilder.buildPaginationButton(
-                    SGPaginationButtonType.forSlot(offset),this
-            );
-            inventory.setItem(i, paginationButton != null ? paginationButton.getIcon() : null);
+                SGButton paginationButton = paginationButtonBuilder.buildPaginationButton(
+                        SGPaginationButtonType.forSlot(offset),this
+                );
+                inventory.setItem(i, paginationButton != null ? paginationButton.getIcon() : null);
+            }
         }
 
         return inventory;
