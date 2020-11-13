@@ -440,7 +440,7 @@ public class SGMenu implements InventoryHolder {
         if (currentPage < getMaxPage() - 1) {
             currentPage++;
             refreshInventory(viewer);
-            this.onPageChange.accept(this);
+            if (this.onPageChange != null) this.onPageChange.accept(this);
             return true;
         } else {
             return false;
@@ -459,7 +459,7 @@ public class SGMenu implements InventoryHolder {
         if (currentPage > 0) {
             currentPage--;
             refreshInventory(viewer);
-            this.onPageChange.accept(this);
+            if (this.onPageChange != null) this.onPageChange.accept(this);
             return true;
         } else {
             return false;
