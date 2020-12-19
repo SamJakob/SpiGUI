@@ -105,6 +105,9 @@ public class SGMenuListener implements Listener {
             // and is listening to the close event, it will log a warning to the console.
             try {
                 Object reason = event.getClass().getMethod("getReason").invoke(event);
+
+                Bukkit.getLogger().info(reason.toString());
+
                 if (reason.toString().equals("OPEN_NEW")) return;
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
                 if (clickedGui.getOnClose() != null) Bukkit.getLogger().warning("Cannot check if user opened new GUI in InventoryCloseEvent. Please use PaperSpigot. Otherwise, the plugin may not function as desired!");
