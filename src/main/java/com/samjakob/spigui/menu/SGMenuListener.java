@@ -5,11 +5,14 @@ import com.samjakob.spigui.SpiGUI;
 import com.samjakob.spigui.buttons.SGButton;
 import com.samjakob.spigui.pagination.SGPaginationButtonBuilder;
 import com.samjakob.spigui.pagination.SGPaginationButtonType;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class SGMenuListener implements Listener {
 
@@ -96,6 +99,16 @@ public class SGMenuListener implements Listener {
             // (if not, it'll be deferred to the SGMenuListener registered
             // by that plugin that does own the GUI.)
             if (!clickedGui.getOwner().equals(owner)) return;
+
+            // Check if no new GUI is opened, else ignore.
+            // This only works for PaperSpigot. If the user is not using PaperSpigot,
+            // and is listening to the close event, it will log a warning to the console.
+            try {
+                Object reason = event.getClass().getMethod("getReason").invoke(event);
+                if (reason.toString().equals("OPEN_NEW")) return;
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
+                if (clickedGui.getOnClose() != null) Bukkit.getLogger().warning("Cannot check if user opened new GUI in InventoryCloseEvent. Please use PaperSpigot. Otherwise, the plugin may not function as desired!");
+            }
 
             // If all the above is true and the inventory's onClose is not null,
             // call it.
