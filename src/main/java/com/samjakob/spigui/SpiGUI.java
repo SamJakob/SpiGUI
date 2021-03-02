@@ -18,7 +18,7 @@ import java.util.List;
  * <a href="https://github.com/SamJakob/SpiGUI">https://github.com/SamJakob/SpiGUI</a>
  *
  * @author SamJakob
- * @version 2.0.0
+ * @version 1.2.0
  */
 public class SpiGUI {
 
