@@ -42,76 +42,77 @@ public class SpiGUITest extends JavaPlugin {
 
             Player player = (Player) sender;
 
-            // Open a test SpiGUI menu.
-            SGMenu myAwesomeMenu = SpiGUITest.getSpiGUI().create("&c&lSpiGUI &c(Page {currentPage}/{maxPage})", 3);
+            if (args.length == 0) {
+                // Open a test SpiGUI menu.
+                SGMenu myAwesomeMenu = SpiGUITest.getSpiGUI().create("&c&lSpiGUI &c(Page {currentPage}/{maxPage})", 3);
 
-            myAwesomeMenu.setButton(0, 10, new SGButton(
-                new ItemBuilder(Material.SKULL_ITEM)
-                    .skullOwner(player.getName())
-                    .name("&e&l" + player.getDisplayName())
-                    .lore(
-                        "&eGame Mode: &6" + player.getGameMode().toString(),
-                        "&eLocation: &6" + String.format(
-                            "%.0f, %.0f, %.0f",
-                            player.getLocation().getX(),
-                            player.getLocation().getY(),
-                            player.getLocation().getZ()
-                        ),
-                        "&eExperience: &6" + player.getTotalExperience()
-                    )
-                    .build()
-            ));
-
-            myAwesomeMenu.setButton(1, 0, new SGButton(
-                new ItemBuilder(Material.GOLD_ORE)
-                    .name("&6Get rich quick!")
-                    .build()
-            ).withListener(event -> {
-                Inventory playerInventory = event.getWhoClicked().getInventory();
-
-                IntStream.range(0, 9).forEach(hotBarSlot -> playerInventory.setItem(
-                    hotBarSlot, new ItemBuilder(
-                        event.getCurrentItem().getType() == Material.GOLD_ORE
-                                ? Material.GOLD_BLOCK
-                                : event.getCurrentItem().getType()
-                    ).amount(64).build()
+                myAwesomeMenu.setButton(0, 10, new SGButton(
+                        new ItemBuilder(Material.SKULL_ITEM)
+                                .skullOwner(player.getName())
+                                .name("&e&l" + player.getDisplayName())
+                                .lore(
+                                        "&eGame Mode: &6" + player.getGameMode().toString(),
+                                        "&eLocation: &6" + String.format(
+                                                "%.0f, %.0f, %.0f",
+                                                player.getLocation().getX(),
+                                                player.getLocation().getY(),
+                                                player.getLocation().getZ()
+                                        ),
+                                        "&eExperience: &6" + player.getTotalExperience()
+                                )
+                                .build()
                 ));
 
-                event.getWhoClicked().sendMessage(
-                    ChatColor.translateAlternateColorCodes('&',
-                        event.getCurrentItem().getType() == Material.GOLD_ORE
-                            ? "&e&lYou are now rich!"
-                            : "&7&lYou are now poor."
-                    )
-                );
+                myAwesomeMenu.setButton(1, 0, new SGButton(
+                        new ItemBuilder(Material.GOLD_ORE)
+                                .name("&6Get rich quick!")
+                                .build()
+                ).withListener(event -> {
+                    Inventory playerInventory = event.getWhoClicked().getInventory();
 
-                Material newMaterial = event.getCurrentItem().getType() == Material.GOLD_ORE
-                        ? Material.DIRT
-                        : Material.GOLD_ORE;
+                    IntStream.range(0, 9).forEach(hotBarSlot -> playerInventory.setItem(
+                            hotBarSlot, new ItemBuilder(
+                                    event.getCurrentItem().getType() == Material.GOLD_ORE
+                                            ? Material.GOLD_BLOCK
+                                            : event.getCurrentItem().getType()
+                            ).amount(64).build()
+                    ));
 
-                myAwesomeMenu.getButton(1, 0).setIcon(
-                    new ItemBuilder(newMaterial).name(
-                            newMaterial == Material.GOLD_ORE ? "&6Get rich quick!" : "&7Get poor quick!"
-                    ).amount(1).build()
-                );
+                    event.getWhoClicked().sendMessage(
+                            ChatColor.translateAlternateColorCodes('&',
+                                    event.getCurrentItem().getType() == Material.GOLD_ORE
+                                            ? "&e&lYou are now rich!"
+                                            : "&7&lYou are now poor."
+                            )
+                    );
 
-                myAwesomeMenu.refreshInventory(event.getWhoClicked());
-                ((Player) event.getWhoClicked()).updateInventory();
-            }));
+                    Material newMaterial = event.getCurrentItem().getType() == Material.GOLD_ORE
+                            ? Material.DIRT
+                            : Material.GOLD_ORE;
 
-            AtomicReference<BukkitTask> borderRunnable = new AtomicReference<>();
+                    myAwesomeMenu.getButton(1, 0).setIcon(
+                            new ItemBuilder(newMaterial).name(
+                                    newMaterial == Material.GOLD_ORE ? "&6Get rich quick!" : "&7Get poor quick!"
+                            ).amount(1).build()
+                    );
 
-            myAwesomeMenu.setOnPageChange(inventory -> {
-                if (inventory.getCurrentPage() != 0) {
-                    if (borderRunnable.get() != null) borderRunnable.get().cancel();
-                } else borderRunnable.set(
-                    inventory.getCurrentPage() != 0
-                            ? null
-                            : new BukkitRunnable(){
+                    myAwesomeMenu.refreshInventory(event.getWhoClicked());
+                    ((Player) event.getWhoClicked()).updateInventory();
+                }));
+
+                AtomicReference<BukkitTask> borderRunnable = new AtomicReference<>();
+
+                myAwesomeMenu.setOnPageChange(inventory -> {
+                    if (inventory.getCurrentPage() != 0) {
+                        if (borderRunnable.get() != null) borderRunnable.get().cancel();
+                    } else borderRunnable.set(
+                            inventory.getCurrentPage() != 0
+                                    ? null
+                                    : new BukkitRunnable(){
 
                                 private final int[] TILES_TO_UPDATE = {
-                                         0,  1,  2,  3,  4,  5,  6,  7,  8,
-                                         9,                             17,
+                                        0,  1,  2,  3,  4,  5,  6,  7,  8,
+                                        9,                             17,
                                         18, 19, 20, 21, 22, 23, 24, 25, 26
                                 };
 
@@ -140,18 +141,45 @@ public class SpiGUITest extends JavaPlugin {
                                     );
                                 }
 
-                    }.runTaskTimer(this, 0L, 20L)
-                );
-            });
+                            }.runTaskTimer(this, 0L, 20L)
+                    );
+                });
 
-            myAwesomeMenu.setOnClose(inventory -> {
-                if (borderRunnable.get() != null) borderRunnable.get().cancel();
-            });
+                myAwesomeMenu.setOnClose(inventory -> {
+                    if (borderRunnable.get() != null) borderRunnable.get().cancel();
+                });
 
-            myAwesomeMenu.getOnPageChange().accept(myAwesomeMenu);
-            player.openInventory(myAwesomeMenu.getInventory());
+                myAwesomeMenu.getOnPageChange().accept(myAwesomeMenu);
+                player.openInventory(myAwesomeMenu.getInventory());
 
-            return true;
+                return true;
+            }
+
+            if (args.length == 2) {
+                switch(args[0]) {
+                    case "inventorySizeTest":
+                        int size = 0;
+                        try {
+                            size = Integer.parseInt(args[1]);
+                        } catch (NumberFormatException ex) {
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l&oERROR  &cThe inventory size must be a valid integer."));
+                            return true;
+                        }
+
+                        SGMenu inventorySizeTest = SpiGUITest.getSpiGUI().create("Test Menu", 1);
+
+                        IntStream.range(0, size).forEach(i -> inventorySizeTest.addButton(new SGButton(
+                                new ItemBuilder(Material.GOLD_ORE)
+                                    .build()
+                        )));
+
+                        player.openInventory(inventorySizeTest.getInventory());
+
+                        return true;
+                }
+            }
+
+            player.sendMessage("Unrecognized command.");
         }
 
         return false;

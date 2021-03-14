@@ -407,7 +407,7 @@ public class SGMenu implements InventoryHolder {
      * @return The highest page number that can be viewed.
      */
     public int getMaxPage() {
-        return (int) Math.ceil((double) getHighestFilledSlot() / ((double) getPageSize() - 1));
+        return (int) Math.ceil(((double) getHighestFilledSlot() + 1) / ((double) getPageSize()));
     }
 
     /**
