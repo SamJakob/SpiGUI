@@ -10,10 +10,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -42,7 +39,7 @@ public class SGMenu implements InventoryHolder {
     private int rowsPerPage;
 
     private final Map<Integer, SGButton> items;
-    private final List<Integer> stickiedSlots;
+    private final HashSet<Integer> stickiedSlots;
 
     private int currentPage;
     private Boolean blockDefaultInteractions;
@@ -70,7 +67,7 @@ public class SGMenu implements InventoryHolder {
         this.tag = tag;
 
         this.items = new HashMap<>();
-        this.stickiedSlots = new ArrayList<>();
+        this.stickiedSlots = new HashSet<>();
 
         this.currentPage = 0;
     }
