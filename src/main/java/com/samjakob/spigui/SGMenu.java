@@ -395,7 +395,7 @@ public class SGMenu implements InventoryHolder {
      */
     public void setCurrentPage (int page) {
         this.currentPage = page;
-        this.onPageChange.accept(this);
+        if (this.onPageChange != null) this.onPageChange.accept(this);
     }
 
     /**
