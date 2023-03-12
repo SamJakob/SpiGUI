@@ -24,18 +24,19 @@ public class SGMenuListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
 
-        // Determine if the inventory was a SpiGUI.
-        if (event.getInventory().getHolder() != null
-            && event.getInventory().getHolder() instanceof SGMenu) {
+        // Determine if the clicked inventory was a SpiGUI.
+        if (event.getClickedInventory() != null
+            && event.getClickedInventory().getHolder() != null
+            && event.getClickedInventory().getHolder() instanceof SGMenu) {
 
             // Get the instance of the SpiGUI that was clicked.
-            SGMenu clickedGui = (SGMenu) event.getInventory().getHolder();
+            SGMenu clickedGui = (SGMenu) event.getClickedInventory().getHolder();
 
             // Check if the GUI is owner by the current plugin
             // (if not, it'll be deferred to the SGMenuListener registered
             // by that plugin that does own the GUI.)
             if (!clickedGui.getOwner().equals(owner)) return;
-
+            
             // If the default action is to cancel the event (block default interactions)
             // we'll do that now.
             // The inventory's value is checked first, so it can be overridden on a
