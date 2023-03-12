@@ -36,6 +36,9 @@ public class SGMenuListener implements Listener {
             // by that plugin that does own the GUI.)
             if (!clickedGui.getOwner().equals(owner)) return;
 
+            //Check if the click was inside the GUI and not inside player's inventory
+            if (event.getClickedInventory() == null || event.getClickedInventory().getType() == InventoryType.PLAYER) return;
+            
             // If the default action is to cancel the event (block default interactions)
             // we'll do that now.
             // The inventory's value is checked first, so it can be overridden on a
