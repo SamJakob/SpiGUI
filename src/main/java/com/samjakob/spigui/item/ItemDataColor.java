@@ -4,7 +4,7 @@ package com.samjakob.spigui.item;
  * Items such as glass panes can have variable color. This color is
  * set using durability values which is understandable from an
  * efficiency perspective however it is rather unintuitive.
- *
+ * <p>
  * This class allows those damage values to be referred to by the name
  * of the color they represent.
  *

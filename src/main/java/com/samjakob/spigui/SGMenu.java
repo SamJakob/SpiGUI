@@ -164,7 +164,7 @@ public class SGMenu implements InventoryHolder {
     /**
      * Returns the number of slots per page of the inventory. This would be
      * associated with the Bukkit/Spigot API's inventory 'size' parameter.
-     *
+     * <p>
      * So for example if {@link #getRowsPerPage()} was 3, this would be 27,
      * as Minecraft Chest inventories have rows of 9 columns.
      *
@@ -176,7 +176,7 @@ public class SGMenu implements InventoryHolder {
 
     /**
      * Sets the number of rows per page of the inventory.
-     *
+     * <p>
      * There is no way to set the number of slots per page directly, so if
      * you need to do that, you'll need to divide the number of slots by 9
      * and supply the result to this parameter to achieve that.
@@ -282,7 +282,7 @@ public class SGMenu implements InventoryHolder {
     /**
      * Adds the provided {@link SGButton} at the position denoted by the
      * supplied slot parameter.
-     *
+     * <p>
      * If you specify a value larger than the value of the first page,
      * pagination will be automatically applied when the inventory is
      * rendered. An alternative to this is to use {@link #setButton(int, int, SGButton)}.
@@ -298,12 +298,12 @@ public class SGMenu implements InventoryHolder {
     /**
      * Adds the provided {@link SGButton} at the position denoted by the
      * supplied slot parameter <i>on the page denoted by the supplied page parameter</i>.
-     *
+     * <p>
      * This is an alias for {@link #setButton(int, SGButton)}, however one where the slot
      * value is mapped to the specified page. So if page is 2 (the third page) and the
      * inventory row count was 3 (so a size of 27), a supplied slot value of 3 would actually map to
      * a slot value of (2 * 27) + 3 = 54. The mathematical formula for this is <code>(page * pageSize) + slot</code>.
-     *
+     * <p>
      * If the slot value is out of the bounds of the specified page, this function will do nothing.
      *
      * @see #setButton(int, SGButton)
@@ -330,7 +330,7 @@ public class SGMenu implements InventoryHolder {
     /**
      * An alias for {@link #removeButton(int)} to remove a button from the specified
      * slot on the specified page.
-     *
+     * <p>
      * If the slot value is out of the bounds of the specified page, this function will do nothing.
      *
      * @param page The page containing the button you wish to remove.
@@ -345,7 +345,7 @@ public class SGMenu implements InventoryHolder {
 
     /**
      * Returns the {@link SGButton} in the specified slot.
-     *
+     * <p>
      * If you attempt to get a slot less than 0 or greater than the slot containing
      * the button at the greatest slot value, this will return null.
      *
@@ -469,10 +469,10 @@ public class SGMenu implements InventoryHolder {
     /**
      * Marks a slot as 'sticky', so that when the page is changed,
      * the slot will always display the value on the first page.
-     *
+     * <p>
      * This is useful for implementing things like 'toolbars', where
      * you have a set of common items on every page.
-     *
+     * <p>
      * If the slot is out of the bounds of the first page (i.e. less
      * than 0 or greater than {@link #getPageSize()} - 1) this method
      * will do nothing.

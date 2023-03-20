@@ -18,7 +18,7 @@ import java.util.List;
  * <a href="https://github.com/SamJakob/SpiGUI">https://github.com/SamJakob/SpiGUI</a>
  *
  * @author SamJakob
- * @version 1.2.0
+ * @version 1.3.0
  */
 public class SpiGUI {
 
@@ -27,11 +27,11 @@ public class SpiGUI {
     /**
      * Whether or not the inventory click actions should be
      * cancelled by default.
-     *
+     * <p>
      * This is typically set to true so events needn't be manually cancelled
      * every time an item is clicked in the inventory as that is the behavior
      * most typically used with an inventory GUI.
-     *
+     * <p>
      * With this set to true, you can of course use <code>event.setCancelled(false);</code> to
      * allow the default interaction.
      */
@@ -39,12 +39,12 @@ public class SpiGUI {
 
     /**
      * Whether or not automatic pagination should be enabled.
-     *
+     * <p>
      * This is set to true by default and it means if you set an inventory slot
      * greater than the highest slot on the inventory, a row will automatically
      * be added containing pagination items that allow a user to scroll between
      * different 'pages' to access all of the assigned slots in the inventory.
-     *
+     * <p>
      * This concept is based on an improved version of the approach taken with
      * my SpigotPaginatedGUI library.
      */
@@ -53,7 +53,7 @@ public class SpiGUI {
     /**
      * The defaultPaginationButtonBuilder is the plugin-wide {@link SGPaginationButtonBuilder}
      * called when building pagination buttons for inventory GUIs.
-     *
+     * <p>
      * This can be overridden per-inventory, as well as per-plugin using the appropriate methods
      * on either the inventory class ({@link SGMenu}) or your plugin's instance of
      * {@link SpiGUI}.
@@ -107,7 +107,7 @@ public class SpiGUI {
      * This is intended to be stored as a static field in your plugin with a public static
      * getter (or a public static field - dealer's choice) and you create inventories through
      * this class by calling {@link #create(String, int)} on the static {@link SpiGUI} field.
-     *
+     * <p>
      * A lengthy justification of this is provided below, should you care to read it.
      *
      * <br><br>
@@ -147,7 +147,7 @@ public class SpiGUI {
     /**
      * An alias for {@link #create(String, int, String)} with the tag set to null.
      * Use this method if you don't need the tag, or you don't know what it's for.
-     *
+     * <p>
      * The rows parameter is used in place of the size parameter of the
      * Bukkit/Spigot inventory API. So, if you wanted an inventory of size
      * 27, you would supply 3 as the value of the rows parameter.
@@ -268,10 +268,10 @@ public class SpiGUI {
     /**
      * Finds a list of all open inventories with a given tag along with the
      * player who has that inventory open.
-     *
+     * <p>
      * This returns a list of {@link SGOpenMenu} which simply stores the
      * opened inventory along with the player viewing the open inventory.
-     *
+     * <p>
      * Supplying null as the tag value will get all untagged inventories.
      *
      * @param tag The tag to search for.

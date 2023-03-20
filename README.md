@@ -1,5 +1,5 @@
 # SpiGUI
-A comprehensive inventory menu API for Spigot with pages support. Supports Bukkit/Spigot 1.7 - 1.16 (see [Version Notes](#version-notes)).
+A comprehensive inventory menu API for Spigot with pages support. Supports Bukkit/Spigot 1.7 - 1.19 (see [Version Notes](#version-notes)).
 <p>
   <a target="_blank" href="https://github.com/SamJakob/SpiGUI/blob/master/LICENSE">
     <img alt="License" src="https://img.shields.io/github/license/SamJakob/SpiGUI?style=for-the-badge">
@@ -29,8 +29,11 @@ A comprehensive inventory menu API for Spigot with pages support. Supports Bukki
 <br><br>
 
 ## Version Notes
-- I don't see a reason it shouldn't work in Spigot 1.7 or any version of Bukkit from 1.8 - 1.16 but it hasn't been tested on those versions.
-- This library has been tested on Spigot 1.8 and Spigot 1.16 and is expected to work on every version in-between.
+> _**IMPORTANT!**_ If you have an opinion on how backwards compatibility should be achieved with new versions, please
+> feel free to [drop a reply to this open discussion](https://github.com/SamJakob/SpiGUI/issues/21).
+
+- I don't see a reason it shouldn't work in Spigot 1.7 or any version of Bukkit from 1.8 - 1.19 but it hasn't been tested on each individual version.
+- This library has been tested on Spigot 1.8, Spigot 1.16 and PaperSpigot 1.19 and is expected to work on every versions in-between for most, if not all, forks of Spigot.
 - The [ItemBuilder](https://github.com/SamJakob/SpiGUI/blob/master/src/main/java/com/samjakob/spigui/item/ItemBuilder.java) API does require that `api-version` be `"legacy"` (or not specified) for Spigot versions after 1.13.
 
 <br>
