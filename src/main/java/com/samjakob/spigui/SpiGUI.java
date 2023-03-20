@@ -4,7 +4,7 @@ import com.samjakob.spigui.buttons.SGButton;
 import com.samjakob.spigui.menu.SGMenuListener;
 import com.samjakob.spigui.menu.SGOpenMenu;
 import com.samjakob.spigui.item.ItemBuilder;
-import com.samjakob.spigui.pagination.SGPaginationButtonBuilder;
+import com.samjakob.spigui.pagination.SGToolbarBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -51,47 +51,47 @@ public class SpiGUI {
     private boolean enableAutomaticPagination = true;
 
     /**
-     * The defaultPaginationButtonBuilder is the plugin-wide {@link SGPaginationButtonBuilder}
+     * The defaultToolbarBuilder is the plugin-wide {@link SGToolbarBuilder}
      * called when building pagination buttons for inventory GUIs.
      * <p>
      * This can be overridden per-inventory, as well as per-plugin using the appropriate methods
      * on either the inventory class ({@link SGMenu}) or your plugin's instance of
      * {@link SpiGUI}.
      */
-    private SGPaginationButtonBuilder defaultPaginationButtonBuilder = (type, inventory) -> {
+    private SGToolbarBuilder defaultToolbarBuilder = (slot, page, type, menu) -> {
         switch (type) {
             case PREV_BUTTON:
-                if (inventory.getCurrentPage() > 0) return new SGButton(new ItemBuilder(Material.ARROW)
+                if (menu.getCurrentPage() > 0) return new SGButton(new ItemBuilder(Material.ARROW)
                         .name("&a&l\u2190 Previous Page")
                         .lore(
                                 "&aClick to move back to",
-                                "&apage " + inventory.getCurrentPage() + ".")
+                                "&apage " + menu.getCurrentPage() + ".")
                         .build()
                 ).withListener(event -> {
                     event.setCancelled(true);
-                    inventory.previousPage(event.getWhoClicked());
+                    menu.previousPage(event.getWhoClicked());
                 });
                 else return null;
 
             case CURRENT_BUTTON:
                 return new SGButton(new ItemBuilder(Material.NAME_TAG)
-                        .name("&7&lPage " + (inventory.getCurrentPage() + 1) + " of " + inventory.getMaxPage())
+                        .name("&7&lPage " + (menu.getCurrentPage() + 1) + " of " + menu.getMaxPage())
                         .lore(
                                 "&7You are currently viewing",
-                                "&7page " + (inventory.getCurrentPage() + 1) + "."
+                                "&7page " + (menu.getCurrentPage() + 1) + "."
                         ).build()
                 ).withListener(event -> event.setCancelled(true));
 
             case NEXT_BUTTON:
-                if (inventory.getCurrentPage() < inventory.getMaxPage() - 1) return new SGButton(new ItemBuilder(Material.ARROW)
+                if (menu.getCurrentPage() < menu.getMaxPage() - 1) return new SGButton(new ItemBuilder(Material.ARROW)
                         .name("&a&lNext Page \u2192")
                         .lore(
                                 "&aClick to move forward to",
-                                "&apage " + (inventory.getCurrentPage() + 2) + "."
+                                "&apage " + (menu.getCurrentPage() + 2) + "."
                         ).build()
                 ).withListener(event -> {
                     event.setCancelled(true);
-                    inventory.nextPage(event.getWhoClicked());
+                    menu.nextPage(event.getWhoClicked());
                 });
                 else return null;
 
@@ -248,21 +248,21 @@ public class SpiGUI {
     }
 
     /**
-     * @see SpiGUI#defaultPaginationButtonBuilder
+     * @see SpiGUI#defaultToolbarBuilder
      *
-     * @param defaultPaginationButtonBuilder The default pagination button builder used for GUIs.
+     * @param defaultToolbarBuilder The default toolbar builder used for GUIs.
      */
-    public void setDefaultPaginationButtonBuilder(SGPaginationButtonBuilder defaultPaginationButtonBuilder) {
-        this.defaultPaginationButtonBuilder = defaultPaginationButtonBuilder;
+    public void setDefaultToolbarBuilder(SGToolbarBuilder defaultToolbarBuilder) {
+        this.defaultToolbarBuilder = defaultToolbarBuilder;
     }
 
     /**
-     * @see SpiGUI#defaultPaginationButtonBuilder
+     * @see SpiGUI#defaultToolbarBuilder
      *
-     * @return The default pagination button builder used for GUIs.
+     * @return The default toolbar builder used for GUIs.
      */
-    public SGPaginationButtonBuilder getDefaultPaginationButtonBuilder() {
-        return defaultPaginationButtonBuilder;
+    public SGToolbarBuilder getDefaultToolbarBuilder() {
+        return defaultToolbarBuilder;
     }
 
     /**

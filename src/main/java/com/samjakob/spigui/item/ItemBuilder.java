@@ -228,7 +228,7 @@ public class ItemBuilder {
      * @return The appropriate {@link ItemDataColor} of the item or null.
      */
     public ItemDataColor getColor() {
-        return ItemDataColor.getByValue((short) stack.getDurability());
+        return ItemDataColor.getByValue(stack.getDurability());
     }
 
     /**

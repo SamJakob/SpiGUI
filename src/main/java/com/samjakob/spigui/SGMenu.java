@@ -1,8 +1,8 @@
 package com.samjakob.spigui;
 
 import com.samjakob.spigui.buttons.SGButton;
-import com.samjakob.spigui.pagination.SGPaginationButtonBuilder;
-import com.samjakob.spigui.pagination.SGPaginationButtonType;
+import com.samjakob.spigui.pagination.SGToolbarBuilder;
+import com.samjakob.spigui.pagination.SGToolbarButtonType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.HumanEntity;
@@ -45,7 +45,7 @@ public class SGMenu implements InventoryHolder {
     private Boolean blockDefaultInteractions;
     private Boolean enableAutomaticPagination;
 
-    private SGPaginationButtonBuilder paginationButtonBuilder;
+    private SGToolbarBuilder toolbarBuilder;
     private Consumer<SGMenu> onClose;
     private Consumer<SGMenu> onPageChange;
 
@@ -116,23 +116,23 @@ public class SGMenu implements InventoryHolder {
     }
 
     /**
-     * This is a per-inventory version of ({@link SpiGUI#setDefaultPaginationButtonBuilder(SGPaginationButtonBuilder)}).
+     * This is a per-inventory version of ({@link SpiGUI#setDefaultToolbarBuilder(SGToolbarBuilder)}).
      *
-     * @see SpiGUI#setDefaultPaginationButtonBuilder(SGPaginationButtonBuilder)
-     * @param paginationButtonBuilder The default pagination button builder used for GUIs.
+     * @see SpiGUI#setDefaultToolbarBuilder(SGToolbarBuilder)
+     * @param toolbarBuilder The default toolbar builder used for GUIs.
      */
-    public void setPaginationButtonBuilder(SGPaginationButtonBuilder paginationButtonBuilder) {
-        this.paginationButtonBuilder = paginationButtonBuilder;
+    public void setToolbarBuilder(SGToolbarBuilder toolbarBuilder) {
+        this.toolbarBuilder = toolbarBuilder;
     }
 
     /**
-     * This is a per-inventory version of ({@link SpiGUI#getDefaultPaginationButtonBuilder()}).
+     * This is a per-inventory version of ({@link SpiGUI#getDefaultToolbarBuilder()}).
      *
-     * @see SpiGUI#getDefaultPaginationButtonBuilder()
-     * @return The default pagination button builder used for GUIs.
+     * @see SpiGUI#getDefaultToolbarBuilder()
+     * @return The default toolbar builder used for GUIs.
      */
-    public SGPaginationButtonBuilder getPaginationButtonBuilder() {
-        return this.paginationButtonBuilder;
+    public SGToolbarBuilder getToolbarBuilder() {
+        return this.toolbarBuilder;
     }
 
     /// INVENTORY OWNER ///
@@ -494,7 +494,7 @@ public class SGMenu implements InventoryHolder {
      * @param slot The slot to un-mark as 'sticky'.
      */
     public void unstickSlot(int slot) {
-        this.stickiedSlots.remove(Integer.valueOf(slot));
+        this.stickiedSlots.remove(slot);
     }
 
     /**
@@ -644,17 +644,17 @@ public class SGMenu implements InventoryHolder {
 
         // Render the pagination items.
         if (needsPagination) {
-            SGPaginationButtonBuilder paginationButtonBuilder = spiGUI.getDefaultPaginationButtonBuilder();
-            if (getPaginationButtonBuilder() != null) {
-                paginationButtonBuilder = getPaginationButtonBuilder();
+            SGToolbarBuilder toolbarButtonBuilder = spiGUI.getDefaultToolbarBuilder();
+            if (getToolbarBuilder() != null) {
+                toolbarButtonBuilder = getToolbarBuilder();
             }
 
             int pageSize = getPageSize();
             for (int i = pageSize; i < pageSize + 9; i++) {
                 int offset = i - pageSize;
 
-                SGButton paginationButton = paginationButtonBuilder.buildPaginationButton(
-                        SGPaginationButtonType.forSlot(offset),this
+                SGButton paginationButton = toolbarButtonBuilder.buildToolbarButton(
+                    offset, getCurrentPage(), SGToolbarButtonType.getDefaultForSlot(offset),this
                 );
                 inventory.setItem(i, paginationButton != null ? paginationButton.getIcon() : null);
             }

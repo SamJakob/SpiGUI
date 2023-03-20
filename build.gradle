@@ -5,6 +5,11 @@ plugins {
 group 'com.samjakob'
 version '1.3.0-SNAPSHOT'
 
+java {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
+
 repositories {
     mavenCentral()
 

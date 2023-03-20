@@ -4,6 +4,7 @@ import com.samjakob.spigui.SGMenu;
 import com.samjakob.spigui.SpiGUI;
 import com.samjakob.spigui.buttons.SGButton;
 import com.samjakob.spigui.item.ItemBuilder;
+import com.samjakob.spigui.pagination.SGToolbarButtonType;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -14,12 +15,32 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 
+/**
+ * SpiGUITest
+ * <p>
+ * Simple test plugin to showcase some of the functionality of SpiGUI.
+ * You can build this from the main repository with the 'testJar' Gradle task.
+ *
+ * @author SamJakob
+ * @version 1.3.0
+ */
 public class SpiGUITest extends JavaPlugin {
 
+    /*
+    Please feel free to use code from here. Though, do note that it is a very rough proof of concept intended to
+    showcase and test some of the functionality of SpiGUI.
+    */
+
     private static SpiGUI spiGUI;
+
+    // Start: variables for demonstration purposes.
+    private Map<Player, Integer> gems = new HashMap<>();
+    // End: variables for demonstration purposes.
 
     @Override
     public void onEnable() {
@@ -36,7 +57,7 @@ public class SpiGUITest extends JavaPlugin {
         if (command.getLabel().equalsIgnoreCase("spigui")) {
 
             if (!(sender instanceof Player)) {
-                sender.sendMessage("You must be a player to run this command.");
+                sender.sendMessage("[SpiGUI] [ERROR] You must be a player to run this command.");
                 return true;
             }
 
@@ -45,6 +66,47 @@ public class SpiGUITest extends JavaPlugin {
             if (args.length == 0) {
                 // Open a test SpiGUI menu.
                 SGMenu myAwesomeMenu = SpiGUITest.getSpiGUI().create("&c&lSpiGUI &c(Page {currentPage}/{maxPage})", 3);
+
+                myAwesomeMenu.setToolbarBuilder((slot, page, defaultType, menu) -> {
+                    if (slot == 8) {
+                        return new SGButton(
+                            new ItemBuilder(Material.EMERALD)
+                                .name(String.format("&a&l%d gems", gems.getOrDefault(player, 5)))
+                                .lore(
+                                    "&aUse gems to buy cosmetics",
+                                    "&aand other items in the store!",
+                                    "",
+                                    "&7&o(Click to add more)"
+                                )
+                                .build()
+                        ).withListener((event) -> {
+                            gems.put(player, gems.getOrDefault(player, 5) + 5);
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a&l&oSUCCESS!  &aYou have been given &25 &agems!"));
+                            menu.refreshInventory(event.getWhoClicked());
+                        });
+                    }
+
+                    // Fallback to rendering the default button for a slot.
+                    return spiGUI.getDefaultToolbarBuilder().buildToolbarButton(slot, page, defaultType, menu);
+
+                    // Or, alternatively, to render a button when NEITHER a custom per-inventory button OR a fallback
+                    // button has been defined:
+                    // (Comment above line and uncomment below to enable this)
+
+                    /*
+
+                    // Ensure fallbackButton is not null before rendering. If it is, render an alternative button
+                    // instead.
+                    SGButton fallbackButton = spiGUI.getDefaultToolbarBuilder().buildToolbarButton(slot, page, defaultType, menu);
+                    if (fallbackButton != null) return fallbackButton;
+
+                    return new SGButton(new ItemBuilder(Material.BARRIER).name(" ").build());
+
+                    // You could check if defaultType is UNASSIGNED, however this won't deal with the cases when the
+                    // previous or next button is not shown (there will be an empty space).
+
+                     */
+                });
 
                 myAwesomeMenu.setButton(0, 10, new SGButton(
                         new ItemBuilder(Material.SKULL_ITEM)
@@ -156,26 +218,25 @@ public class SpiGUITest extends JavaPlugin {
             }
 
             if (args.length == 2) {
-                switch(args[0]) {
-                    case "inventorySizeTest":
-                        int size = 0;
-                        try {
-                            size = Integer.parseInt(args[1]);
-                        } catch (NumberFormatException ex) {
-                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l&oERROR  &cThe inventory size must be a valid integer."));
-                            return true;
-                        }
-
-                        SGMenu inventorySizeTest = SpiGUITest.getSpiGUI().create("Test Menu", 1);
-
-                        IntStream.range(0, size).forEach(i -> inventorySizeTest.addButton(new SGButton(
-                                new ItemBuilder(Material.GOLD_ORE)
-                                    .build()
-                        )));
-
-                        player.openInventory(inventorySizeTest.getInventory());
-
+                if (args[0].equals("inventorySizeTest")) {
+                    int size;
+                    try {
+                        size = Integer.parseInt(args[1]);
+                    } catch (NumberFormatException ex) {
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l&oERROR  &cThe inventory size must be a valid integer."));
                         return true;
+                    }
+
+                    SGMenu inventorySizeTest = SpiGUITest.getSpiGUI().create("Test Menu", 1);
+
+                    IntStream.range(0, size).forEach(i -> inventorySizeTest.addButton(new SGButton(
+                            new ItemBuilder(Material.GOLD_ORE)
+                                    .build()
+                    )));
+
+                    player.openInventory(inventorySizeTest.getInventory());
+
+                    return true;
                 }
             }
 
@@ -188,4 +249,5 @@ public class SpiGUITest extends JavaPlugin {
     public static SpiGUI getSpiGUI() {
         return spiGUI;
     }
+
 }

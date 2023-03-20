@@ -3,8 +3,8 @@ package com.samjakob.spigui.menu;
 import com.samjakob.spigui.SGMenu;
 import com.samjakob.spigui.SpiGUI;
 import com.samjakob.spigui.buttons.SGButton;
-import com.samjakob.spigui.pagination.SGPaginationButtonBuilder;
-import com.samjakob.spigui.pagination.SGPaginationButtonType;
+import com.samjakob.spigui.pagination.SGToolbarBuilder;
+import com.samjakob.spigui.pagination.SGToolbarButtonType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -113,14 +113,14 @@ public class SGMenuListener implements Listener {
         // If the slot is on the pagination row, get the appropriate pagination handler.
         if (event.getSlot() > clickedGui.getPageSize()) {
             int offset = event.getSlot() - clickedGui.getPageSize();
-            SGPaginationButtonBuilder paginationButtonBuilder = spiGUI.getDefaultPaginationButtonBuilder();
+            SGToolbarBuilder paginationButtonBuilder = spiGUI.getDefaultToolbarBuilder();
 
-            if (clickedGui.getPaginationButtonBuilder() != null) {
-                paginationButtonBuilder = clickedGui.getPaginationButtonBuilder();
+            if (clickedGui.getToolbarBuilder() != null) {
+                paginationButtonBuilder = clickedGui.getToolbarBuilder();
             }
 
-            SGPaginationButtonType buttonType = SGPaginationButtonType.forSlot(offset);
-            SGButton paginationButton = paginationButtonBuilder.buildPaginationButton(buttonType, clickedGui);
+            SGToolbarButtonType buttonType = SGToolbarButtonType.getDefaultForSlot(offset);
+            SGButton paginationButton = paginationButtonBuilder.buildToolbarButton(offset, clickedGui.getCurrentPage(), buttonType, clickedGui);
             if (paginationButton != null) paginationButton.getListener().onClick(event);
             return;
         }
