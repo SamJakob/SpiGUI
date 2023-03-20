@@ -4,20 +4,25 @@ import com.samjakob.spigui.SGMenu;
 import com.samjakob.spigui.SpiGUI;
 import com.samjakob.spigui.buttons.SGButton;
 import com.samjakob.spigui.item.ItemBuilder;
-import com.samjakob.spigui.pagination.SGToolbarButtonType;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.Duration;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -39,7 +44,7 @@ public class SpiGUITest extends JavaPlugin {
     private static SpiGUI spiGUI;
 
     // Start: variables for demonstration purposes.
-    private Map<Player, Integer> gems = new HashMap<>();
+    private final Map<Player, Integer> gems = new HashMap<>();
     // End: variables for demonstration purposes.
 
     @Override
@@ -62,6 +67,10 @@ public class SpiGUITest extends JavaPlugin {
             }
 
             Player player = (Player) sender;
+
+            // START DEFAULT INVENTORY
+
+            // This is a menu intended to showcase general functionality.
 
             if (args.length == 0) {
                 // Open a test SpiGUI menu.
@@ -217,26 +226,98 @@ public class SpiGUITest extends JavaPlugin {
                 return true;
             }
 
-            if (args.length == 2) {
-                if (args[0].equals("inventorySizeTest")) {
+            // END DEFAULT INVENTORY
+
+            // The following are additional menus intended to test specific functionality:
+
+            switch (args[0]) {
+                case "inventorySizeTest": {
                     int size;
-                    try {
-                        size = Integer.parseInt(args[1]);
-                    } catch (NumberFormatException ex) {
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l&oERROR  &cThe inventory size must be a valid integer."));
+
+                    if (args.length == 1) {
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l&oERROR  &cYou must specify an item count as an integer."));
                         return true;
                     }
 
+                    try {
+                        size = Integer.parseInt(args[1]);
+                    } catch (NumberFormatException ex) {
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l&oERROR  &cThe item count must be a valid integer."));
+                        return true;
+                    }
+
+                    // Create a menu with one row, so that pagination values are easy to calculate (each page is a
+                    // multiple of 9, then the remainder can just be added to ensure the number of items match up).
                     SGMenu inventorySizeTest = SpiGUITest.getSpiGUI().create("Test Menu", 1);
 
                     IntStream.range(0, size).forEach(i -> inventorySizeTest.addButton(new SGButton(
-                            new ItemBuilder(Material.GOLD_ORE)
+                            new ItemBuilder(Material.GOLD_ORE).name(String.format("&6Item %d", i + 1))
                                     .build()
                     )));
 
                     player.openInventory(inventorySizeTest.getInventory());
-
                     return true;
+                }
+
+                case "refreshTest": {
+
+                    SGMenu refreshTestMenu = SpiGUITest.getSpiGUI().create("&bMatches", 1);
+
+                    // Generate 3 to 8 random matches.
+                    List<Match> matches = IntStream.range(0, ThreadLocalRandom.current().nextInt(5) + 3)
+                            .mapToObj((i) -> Match.generateFakeMatch(true))
+                            .collect(Collectors.toList());
+
+                    for (int i = 0; i < matches.size(); i++) {
+                        Match match = matches.get(i);
+
+                        refreshTestMenu.setButton(i, new SGButton(new ItemBuilder(match.getKit().getIcon())
+                                .name(match.getKit().getName())
+                                .lore(
+                                    String.format("&a%s &evs. &a%s", match.getPlayerNames()[0], match.getPlayerNames()[1]),
+                                    String.format("&fTime: &b%s", match.getTime()),
+                                    "",
+                                    String.format("&fKit: &b%s", match.getKit().getName()),
+                                    String.format("&fArena: &b%s &7(%s)", match.getArena(), match.getKit().getName())
+                                )
+                                .build()));
+                    }
+
+                    // Start a refresh task for the menu.
+                    AtomicReference<BukkitTask> refreshMatchesTask = new AtomicReference<>(new BukkitRunnable(){
+                        @Override
+                        public void run() {
+                            for (int i = 0; i < matches.size(); i++) {
+                                Match match = matches.get(i);
+
+                                refreshTestMenu.setButton(i, new SGButton(new ItemBuilder(match.getKit().getIcon())
+                                        .flag(ItemFlag.HIDE_ATTRIBUTES)
+                                        .flag(ItemFlag.HIDE_DESTROYS)
+                                        .flag(ItemFlag.HIDE_PLACED_ON)
+                                        .flag(ItemFlag.HIDE_POTION_EFFECTS)
+                                        .name(match.getKit().getName())
+                                        .lore(
+                                                String.format("&a%s &evs. &a%s", match.getPlayerNames()[0], match.getPlayerNames()[1]),
+                                                String.format("&fTime: &b%s", match.getTime()),
+                                                "",
+                                                String.format("&fKit: &b%s", match.getKit().getName()),
+                                                String.format("&fArena: &b%s &7(%s)", match.getArena(), match.getKit().getName())
+                                        )
+                                        .build()));
+                            }
+
+                            refreshTestMenu.refreshInventory(player);
+                        }
+                    }.runTaskTimer(this, 0L, 20L));
+
+                    // Cancel the refresh task when the inventory is closed.
+                    refreshTestMenu.setOnClose(menu -> {
+                        if (refreshMatchesTask.get() != null) refreshMatchesTask.get().cancel();
+                    });
+
+                    player.openInventory(refreshTestMenu.getInventory());
+                    return true;
+
                 }
             }
 
@@ -248,6 +329,135 @@ public class SpiGUITest extends JavaPlugin {
 
     public static SpiGUI getSpiGUI() {
         return spiGUI;
+    }
+
+    // The following is mock classes/data for the above test GUIs.
+
+    private static class Kit {
+        private final String name;
+        private final ItemStack icon;
+
+        public Kit(String name, ItemStack icon) {
+            this.name = name;
+            this.icon = icon;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public ItemStack getIcon() {
+            return this.icon;
+        }
+    }
+
+    private static class Match {
+
+        private enum MatchState {
+            /** Waiting to start. */
+            WAITING,
+            /** Currently ongoing. */
+            ONGOING,
+            /** Ended. */
+            ENDED
+        }
+
+        // Begin mock data.
+        private static final String[] fakePlayerNames = {"MoreHaro", "Pixelle", "SpyPlenty", "Winlink", "Herobrine", "Notch", "Dinnerbone", "CinnamonTown", "TreeMushrooms"};
+        private static final Kit[] fakeKits = {
+            new Kit("Classic Battle", new ItemBuilder(Material.STONE_SWORD).name("&7Classic Battle").build()),
+            new Kit("OP Battle", new ItemBuilder(Material.DIAMOND_SWORD).name("&bOP Battle").build()),
+            new Kit("Classic UHC", new ItemBuilder(Material.GOLDEN_APPLE).name("&eClassic UHC").build()),
+            new Kit("OP UHC", new ItemBuilder(Material.GOLDEN_APPLE).data((short) 1).name("&6OP UHC").build()),
+        };
+        private static final String[] fakeArenas = {"King's Road", "Ilios", "Fort Starr", "The Hopper"};
+
+        /** Generates a Match with fake data. */
+        public static Match generateFakeMatch() { return generateFakeMatch(false); }
+
+        public static Match generateFakeMatch(boolean alreadyStarted) {
+            // Ensure unique values are generated for player1 and player2.
+            int player1 = ThreadLocalRandom.current().nextInt(fakePlayerNames.length);
+            int player2;
+            do {
+                player2 = ThreadLocalRandom.current().nextInt(fakePlayerNames.length);
+            } while (player2 == player1);
+
+            Match fakeMatch = new Match(
+                new String[]{fakePlayerNames[player1], fakePlayerNames[player2]},
+                fakeKits[ThreadLocalRandom.current().nextInt(fakeKits.length)],
+                fakeArenas[ThreadLocalRandom.current().nextInt(fakeArenas.length)]
+            );
+
+            if (alreadyStarted) {
+                // If alreadyStarted specified to true, then generate a match with current time minus up to 5 minutes.
+                fakeMatch.matchStartTime = System.currentTimeMillis()
+                        - ThreadLocalRandom.current().nextLong(5 * 60000);
+            }
+
+            return fakeMatch;
+        }
+        // End mock data.
+
+        /** List of players in match. Two players implies a duel. */
+        private final String[] playerNames;
+
+        public String[] getPlayerNames() { return playerNames; }
+
+        /** Match start time in UNIX milliseconds. */
+        private Long matchStartTime;
+
+        /** Match end time in UNIX milliseconds. */
+        private Long matchEndTime;
+
+        /** Name of the kit used for the duel. */
+        private final Kit kit;
+
+        public Kit getKit() { return kit; }
+
+        /** Name of the arena used for the duel. */
+        private final String arena;
+
+        public String getArena() { return arena; }
+
+        public String getTime() {
+            switch (getState()) {
+                case WAITING: return "Waiting...";
+                case ONGOING:
+                case ENDED: {
+                    long duration = (matchEndTime != null ? matchEndTime : System.currentTimeMillis()) - matchStartTime;
+
+                    long minutes = TimeUnit.MILLISECONDS.toMinutes(duration);
+                    long seconds = TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(minutes);
+                    return String.format("%02d:%02d", minutes, seconds);
+                }
+            }
+
+            return "ERROR";
+        }
+
+        public Match(String[] playerNames, Kit kit, String arena) {
+            this.playerNames = playerNames;
+            this.kit = kit;
+            this.arena = arena;
+        }
+
+        public void start() {
+            if (this.matchStartTime != null) throw new IllegalStateException("Match already started!");
+            this.matchStartTime = System.currentTimeMillis();
+        }
+
+        public void stop() {
+            if (this.matchEndTime != null) throw new IllegalStateException("Match already finished!");
+            this.matchEndTime = System.currentTimeMillis();
+        }
+
+        public MatchState getState() {
+            if (this.matchStartTime == null) return MatchState.WAITING;
+            else if (this.matchEndTime == null) return MatchState.ONGOING;
+            return MatchState.ENDED;
+        }
+
     }
 
 }
