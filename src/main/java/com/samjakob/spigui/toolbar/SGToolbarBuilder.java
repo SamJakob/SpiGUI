@@ -1,6 +1,6 @@
-package com.samjakob.spigui.pagination;
+package com.samjakob.spigui.toolbar;
 
-import com.samjakob.spigui.SGMenu;
+import com.samjakob.spigui.menu.SGMenu;
 import com.samjakob.spigui.buttons.SGButton;
 
 public interface SGToolbarBuilder {

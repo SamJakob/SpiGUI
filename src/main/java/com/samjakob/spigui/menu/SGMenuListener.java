@@ -1,10 +1,9 @@
 package com.samjakob.spigui.menu;
 
-import com.samjakob.spigui.SGMenu;
 import com.samjakob.spigui.SpiGUI;
 import com.samjakob.spigui.buttons.SGButton;
-import com.samjakob.spigui.pagination.SGToolbarBuilder;
-import com.samjakob.spigui.pagination.SGToolbarButtonType;
+import com.samjakob.spigui.toolbar.SGToolbarBuilder;
+import com.samjakob.spigui.toolbar.SGToolbarButtonType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

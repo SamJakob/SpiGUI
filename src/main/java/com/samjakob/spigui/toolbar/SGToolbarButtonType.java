@@ -1,4 +1,4 @@
-package com.samjakob.spigui.pagination;
+package com.samjakob.spigui.toolbar;
 
 import java.util.AbstractMap;
 import java.util.Map;

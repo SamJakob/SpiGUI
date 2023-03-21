@@ -1,10 +1,11 @@
 package com.samjakob.spigui;
 
 import com.samjakob.spigui.buttons.SGButton;
+import com.samjakob.spigui.menu.SGMenu;
 import com.samjakob.spigui.menu.SGMenuListener;
 import com.samjakob.spigui.menu.SGOpenMenu;
 import com.samjakob.spigui.item.ItemBuilder;
-import com.samjakob.spigui.pagination.SGToolbarBuilder;
+import com.samjakob.spigui.toolbar.SGToolbarBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -14,11 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A comprehensive GUI API for Spigot with pages support.<br>
- * <a href="https://github.com/SamJakob/SpiGUI">https://github.com/SamJakob/SpiGUI</a>
- *
- * @author SamJakob
- * @version 1.3.0
+ * The core class for the SpiGUI library.<br>
+ * One instance of the SpiGUI class is registered for each plugin using it.
+ * <p>
+ * The expected usage of SpiGUI is that you register a SpiGUI instance for your
+ * plugin with <code>new SpiGUI(this);</code> in your class that extends
+ * <code>JavaPlugin</code>. You can then use the instance you've created throughout
+ * your project to create GUIs that use SpiGUI.
  */
 public class SpiGUI {
 

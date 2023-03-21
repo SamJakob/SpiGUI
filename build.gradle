@@ -10,6 +10,9 @@ uri "https://github.com/SamJakob/SpiGUI"
 java {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
+
+    withJavadocJar()
+    withSourcesJar()
 }
 
 repositories {
@@ -33,6 +36,8 @@ dependencies {
     implementation group: 'org.spigotmc', name: 'spigot-api', version: '1.8.8-R0.1-SNAPSHOT'
 }
 
+// Builds Spigot runnable plugin from the test package.
+// Can be used to demonstrate and test functionality.
 tasks.register('testJar', Jar) {
     from sourceSets.main.output.classesDirs
     from sourceSets.test.output.classesDirs
@@ -43,41 +48,21 @@ tasks.register('testJar', Jar) {
     archiveBaseName.set("SpiGUITest")
 }
 
-tasks.register('sourcesJar', Jar) {
-    archiveClassifier.set('sources')
-    from sourceSets.main.java.sourceDirectories
-}
+javadoc {
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true);
+    }
 
-tasks.register('classesJar', Jar) {
-    from sourceSets.main.output.classesDirs
-}
-
-tasks.register('documentation', Javadoc) {
     source = sourceSets.main.java.sourceDirectories
     classpath += configurations.compileClasspath
 
     options.memberLevel = JavadocMemberLevel.PRIVATE
 }
 
-tasks.register('javadocJar', Jar) {
-    dependsOn documentation
-    archiveClassifier.set('javadoc')
-    from documentation.destinationDir
-}
-
-artifacts {
-    archives classesJar
-    archives javadocJar
-    archives sourcesJar
-}
-
 publishing {
     publications {
         SpiGUI(MavenPublication) {
             from components.java
-
-            artifact(javadocJar)
-            artifact(sourcesJar)
         }
     }
 }

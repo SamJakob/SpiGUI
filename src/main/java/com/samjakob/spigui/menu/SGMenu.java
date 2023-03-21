@@ -1,8 +1,9 @@
-package com.samjakob.spigui;
+package com.samjakob.spigui.menu;
 
+import com.samjakob.spigui.SpiGUI;
 import com.samjakob.spigui.buttons.SGButton;
-import com.samjakob.spigui.pagination.SGToolbarBuilder;
-import com.samjakob.spigui.pagination.SGToolbarButtonType;
+import com.samjakob.spigui.toolbar.SGToolbarBuilder;
+import com.samjakob.spigui.toolbar.SGToolbarButtonType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.HumanEntity;
@@ -50,7 +51,9 @@ public class SGMenu implements InventoryHolder {
     private Consumer<SGMenu> onPageChange;
 
     /**
+     * <b>Intended for internal use only. Use {@link SpiGUI#create(String, int)} or {@link SpiGUI#create(String, int, String)}!</b><br>
      * Used by the library internally to construct an SGMenu.
+     * <p>
      * The name parameter is color code translated.
      *
      * @param owner The plugin the inventory should be associated with.
@@ -58,8 +61,11 @@ public class SGMenu implements InventoryHolder {
      * @param name The display name of the inventory.
      * @param rowsPerPage The number of rows per page.
      * @param tag The inventory's tag.
+     *            
+     * @see SpiGUI#create(String, int)
+     * @see SpiGUI#create(String, int, String) 
      */
-    SGMenu(JavaPlugin owner, SpiGUI spiGUI, String name, int rowsPerPage, String tag) {
+    public SGMenu(JavaPlugin owner, SpiGUI spiGUI, String name, int rowsPerPage, String tag) {
         this.owner = owner;
         this.spiGUI = spiGUI;
         this.name = ChatColor.translateAlternateColorCodes('&', name);
