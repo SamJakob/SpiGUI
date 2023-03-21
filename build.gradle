@@ -5,6 +5,7 @@ plugins {
 
 group 'com.samjakob'
 version '1.3.0-SNAPSHOT'
+uri "https://github.com/SamJakob/SpiGUI"
 
 java {
     sourceCompatibility = 1.8
@@ -68,4 +69,15 @@ artifacts {
     archives classesJar
     archives javadocJar
     archives sourcesJar
+}
+
+publishing {
+    publications {
+        SpiGUI(MavenPublication) {
+            from components.java
+
+            artifact(javadocJar)
+            artifact(sourcesJar)
+        }
+    }
 }
