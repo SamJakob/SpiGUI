@@ -5,6 +5,7 @@ import com.samjakob.spigui.menu.SGMenu;
 import com.samjakob.spigui.menu.SGMenuListener;
 import com.samjakob.spigui.menu.SGOpenMenu;
 import com.samjakob.spigui.item.ItemBuilder;
+import com.samjakob.spigui.toolbar.SGDefaultToolbarBuilder;
 import com.samjakob.spigui.toolbar.SGToolbarBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -13,11 +14,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The core class for the SpiGUI library.<br>
  * One instance of the SpiGUI class is registered for each plugin using it.
- * <p>
+ * <br>
  * The expected usage of SpiGUI is that you register a SpiGUI instance for your
  * plugin with <code>new SpiGUI(this);</code> in your class that extends
  * <code>JavaPlugin</code>. You can then use the instance you've created throughout
@@ -25,29 +27,30 @@ import java.util.List;
  */
 public class SpiGUI {
 
+    /** The plugin that owns this instance of SpiGUI. */
     private final JavaPlugin plugin;
 
     /**
-     * Whether or not the inventory click actions should be
-     * cancelled by default.
-     * <p>
+     * Whether to cancel inventory click actions by default.
+     * <br>
      * This is typically set to true so events needn't be manually cancelled
      * every time an item is clicked in the inventory as that is the behavior
      * most typically used with an inventory GUI.
-     * <p>
-     * With this set to true, you can of course use <code>event.setCancelled(false);</code> to
-     * allow the default interaction.
+     * <br>
+     * With this set to true, you can of course use <code>event.setCancelled(false);</code>
+     * (or <code>event.setResult(Event.Result.DEFAULT);</code>) in your button
+     * listeners to allow the default behavior of the inventory to take place.
      */
     private boolean blockDefaultInteractions = true;
 
     /**
-     * Whether or not automatic pagination should be enabled.
-     * <p>
-     * This is set to true by default and it means if you set an inventory slot
+     * Whether automatic pagination should be enabled.
+     * <br>
+     * This is set to true by default, and it means if you set an inventory slot
      * greater than the highest slot on the inventory, a row will automatically
      * be added containing pagination items that allow a user to scroll between
-     * different 'pages' to access all of the assigned slots in the inventory.
-     * <p>
+     * different 'pages' to access all the assigned slots in the inventory.
+     * <br>
      * This concept is based on an improved version of the approach taken with
      * my SpigotPaginatedGUI library.
      */
@@ -56,53 +59,12 @@ public class SpiGUI {
     /**
      * The defaultToolbarBuilder is the plugin-wide {@link SGToolbarBuilder}
      * called when building pagination buttons for inventory GUIs.
-     * <p>
+     * <br>
      * This can be overridden per-inventory, as well as per-plugin using the appropriate methods
      * on either the inventory class ({@link SGMenu}) or your plugin's instance of
      * {@link SpiGUI}.
      */
-    private SGToolbarBuilder defaultToolbarBuilder = (slot, page, type, menu) -> {
-        switch (type) {
-            case PREV_BUTTON:
-                if (menu.getCurrentPage() > 0) return new SGButton(new ItemBuilder(Material.ARROW)
-                        .name("&a&l\u2190 Previous Page")
-                        .lore(
-                                "&aClick to move back to",
-                                "&apage " + menu.getCurrentPage() + ".")
-                        .build()
-                ).withListener(event -> {
-                    event.setCancelled(true);
-                    menu.previousPage(event.getWhoClicked());
-                });
-                else return null;
-
-            case CURRENT_BUTTON:
-                return new SGButton(new ItemBuilder(Material.NAME_TAG)
-                        .name("&7&lPage " + (menu.getCurrentPage() + 1) + " of " + menu.getMaxPage())
-                        .lore(
-                                "&7You are currently viewing",
-                                "&7page " + (menu.getCurrentPage() + 1) + "."
-                        ).build()
-                ).withListener(event -> event.setCancelled(true));
-
-            case NEXT_BUTTON:
-                if (menu.getCurrentPage() < menu.getMaxPage() - 1) return new SGButton(new ItemBuilder(Material.ARROW)
-                        .name("&a&lNext Page \u2192")
-                        .lore(
-                                "&aClick to move forward to",
-                                "&apage " + (menu.getCurrentPage() + 2) + "."
-                        ).build()
-                ).withListener(event -> {
-                    event.setCancelled(true);
-                    menu.nextPage(event.getWhoClicked());
-                });
-                else return null;
-
-            case UNASSIGNED:
-            default:
-                return null;
-        }
-    };
+    private SGToolbarBuilder defaultToolbarBuilder = new SGDefaultToolbarBuilder();
 
     /**
      * Creates an instance of the SpiGUI library associated with a given plugin.
@@ -110,7 +72,7 @@ public class SpiGUI {
      * This is intended to be stored as a static field in your plugin with a public static
      * getter (or a public static field - dealer's choice) and you create inventories through
      * this class by calling {@link #create(String, int)} on the static {@link SpiGUI} field.
-     * <p>
+     * <br>
      * A lengthy justification of this is provided below, should you care to read it.
      *
      * <br><br>
@@ -150,10 +112,10 @@ public class SpiGUI {
     /**
      * An alias for {@link #create(String, int, String)} with the tag set to null.
      * Use this method if you don't need the tag, or you don't know what it's for.
-     * <p>
+     * <br>
      * The rows parameter is used in place of the size parameter of the
      * Bukkit/Spigot inventory API. So, if you wanted an inventory of size
-     * 27, you would supply 3 as the value of the rows parameter.
+     * 27, you would supply 3 as the value of the <code>rows</code> parameter.
      *
      * <br><br>
      *
@@ -187,7 +149,7 @@ public class SpiGUI {
      *
      * The rows parameter is used in place of the size parameter of the
      * Bukkit/Spigot inventory API. So, if you wanted an inventory of size
-     * 27, you would supply 3 as the value of the rows parameter.
+     * 27, you would supply 3 as the value of the <code>rows</code> parameter.
      *
      * <br><br>
      *
@@ -217,7 +179,7 @@ public class SpiGUI {
     /**
      * @see SpiGUI#blockDefaultInteractions
      *
-     * @param blockDefaultInteractions Whether or not default inventory interactions should be cancelled.
+     * @param blockDefaultInteractions Whether default inventory interactions should be cancelled.
      */
     public void setBlockDefaultInteractions(boolean blockDefaultInteractions) {
         this.blockDefaultInteractions = blockDefaultInteractions;
@@ -226,7 +188,7 @@ public class SpiGUI {
     /**
      * Returns the value of {@link SpiGUI#blockDefaultInteractions} for this plugin.
      *
-     * @return Whether or not default inventory interactions should be cancelled.
+     * @return Whether default inventory interactions should be cancelled.
      */
     public boolean areDefaultInteractionsBlocked() {
         return blockDefaultInteractions;
@@ -235,7 +197,7 @@ public class SpiGUI {
     /**
      * @see SpiGUI#enableAutomaticPagination
      *
-     * @param enableAutomaticPagination Whether or not automatic pagination should be enabled.
+     * @param enableAutomaticPagination Whether automatic pagination should be enabled.
      */
     public void setEnableAutomaticPagination(boolean enableAutomaticPagination) {
         this.enableAutomaticPagination = enableAutomaticPagination;
@@ -244,7 +206,7 @@ public class SpiGUI {
     /**
      * Returns the value of {@link SpiGUI#enableAutomaticPagination} for this plugin.
      *
-     * @return Whether or not automatic pagination is enabled.
+     * @return Whether automatic pagination is enabled.
      */
     public boolean isAutomaticPaginationEnabled() {
         return enableAutomaticPagination;
@@ -271,10 +233,10 @@ public class SpiGUI {
     /**
      * Finds a list of all open inventories with a given tag along with the
      * player who has that inventory open.
-     * <p>
+     * <br>
      * This returns a list of {@link SGOpenMenu} which simply stores the
      * opened inventory along with the player viewing the open inventory.
-     * <p>
+     * <br>
      * Supplying null as the tag value will get all untagged inventories.
      *
      * @param tag The tag to search for.
@@ -295,7 +257,7 @@ public class SpiGUI {
                 if (topInventory.getHolder() != null && topInventory.getHolder() instanceof SGMenu) {
                     // and the SGMenu has the tag matching the one we're checking for,
                     SGMenu inventory = (SGMenu) topInventory.getHolder();
-                    if (inventory.getTag().equals(tag))
+                    if (Objects.equals(inventory.getTag(), tag))
                         // add the SGMenu to our list of found inventories.
                         foundInventories.add(new SGOpenMenu(inventory, player));
                 }

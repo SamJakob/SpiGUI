@@ -25,7 +25,7 @@ import java.util.stream.IntStream;
 
 /**
  * SpiGUITest
- * <p>
+ * <br>
  * Simple test plugin to showcase some of the functionality of SpiGUI.
  * You can build this from the main repository with the 'testJar' Gradle task.
  *
