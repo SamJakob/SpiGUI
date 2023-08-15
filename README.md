@@ -43,17 +43,18 @@ A comprehensive inventory menu API for Spigot with pages support. Supports Bukki
 You can very easily install SpiGUI using [JitPack](https://jitpack.io/#com.samjakob/SpiGUI).
 (The JitPack page contains instructions for Gradle, Maven, sbt, etc.)
 
-Gradle users; just add the following to your `build.gradle` file:
+<details>
+<summary>Instructions for Gradle</summary>
+
+Just add the following to your `build.gradle` file:
 ```groovy
 repositories {
     // ...
-    
     maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     // ...
-    
     implementation 'com.samjakob:SpiGUI:<insert latest version here>'
 }
 ```
@@ -74,9 +75,13 @@ jar {
 }
 ```
 
+</details>
+
 If you aren't using a build system, you can just download the latest JAR and
 add it to your project's classpath (just make sure the SpiGUI classes are
 included in your JAR when you build it).
+
+<br>
 
 ## Quick Start
 
