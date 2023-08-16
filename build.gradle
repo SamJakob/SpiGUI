@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'maven-publish'
+    id 'signing'
 }
 
 group 'com.samjakob'
@@ -32,6 +33,7 @@ repositories {
 dependencies {
     // Spigot API
     compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.8.8-R0.1-SNAPSHOT'
+    testCompileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.8.8-R0.1-SNAPSHOT'
 }
 
 // Builds Spigot runnable plugin from the test package.
@@ -46,6 +48,64 @@ tasks.register('testJar', Jar) {
     archiveBaseName.set("SpiGUITest")
 }
 
+publishing {
+    publications {
+        SpiGUI(MavenPublication) {
+            pom {
+                name = "SpiGUI"
+                description = "A comprehensive GUI API for Spigot with pages support."
+                url = 'https://github.com/SamJakob/SpiGUI'
+                packaging = 'jar'
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        name = 'SamJakob'
+                        email = 'me@samjakob.com'
+                        organization = 'SamJakob'
+                        organizationUrl = 'https://samjakob.com'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:git://github.com/SamJakob/SpiGUI.git'
+                    developerConnection = 'scm:git:ssh://github.com:SamJakob/SpiGUI.git'
+                    url = 'https://github.com/SamJakob/SpiGUI'
+                }
+            }
+
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            url = version.endsWith('SNAPSHOT')
+                    // If the version ends with SNAPSHOT, we're building a snapshot
+                    // so deploy to a SNAPSHOT repository.
+                    ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+                    // Otherwise, deploy to a staging repository.
+                    : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+
+            credentials {
+                username = project.properties['ossrhUsername']
+                password = project.properties['ossrhPassword']
+            }
+        }
+    }
+}
+
+signing {
+    useGpgCmd()
+    sign publishing.publications.SpiGUI
+}
+
 javadoc {
     if (JavaVersion.current().isJava9Compatible()) {
         options.addBooleanOption('html5', true)
@@ -55,12 +115,4 @@ javadoc {
     classpath += configurations.compileClasspath
 
     options.memberLevel = JavadocMemberLevel.PRIVATE
-}
-
-publishing {
-    publications {
-        SpiGUI(MavenPublication) {
-            from components.java
-        }
-    }
 }
