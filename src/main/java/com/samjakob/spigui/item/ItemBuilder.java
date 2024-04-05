@@ -84,7 +84,7 @@ public class ItemBuilder {
      */
     public ItemBuilder name(String name) {
         ItemMeta stackMeta = stack.getItemMeta();
-        stackMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
+        stackMeta.setDisplayName(ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', name));
         stack.setItemMeta(stackMeta);
         return this;
     }
@@ -151,7 +151,7 @@ public class ItemBuilder {
      */
     public ItemBuilder lore(List<String> lore) {
         for(int i = 0; i < lore.size(); i++){
-            lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i)));
+            lore.set(i, ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', lore.get(i)));
         }
 
         ItemMeta stackMeta = stack.getItemMeta();
