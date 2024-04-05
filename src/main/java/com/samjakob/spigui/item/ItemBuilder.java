@@ -150,7 +150,7 @@ public class ItemBuilder {
      * @return The {@link ItemBuilder} instance.
      */
     public ItemBuilder lore(List<String> lore) {
-        lore.replaceAll(ChatColor.RESET + textToTranslate -> ChatColor.translateAlternateColorCodes('&', textToTranslate));
+        lore.replaceAll(textToTranslate -> ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', textToTranslate));
 
         ItemMeta stackMeta = stack.getItemMeta();
         stackMeta.setLore(lore);
