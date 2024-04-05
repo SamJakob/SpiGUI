@@ -1,5 +1,5 @@
 # SpiGUI
-A comprehensive inventory menu API for Spigot with pages support. Supports Bukkit/Spigot 1.7 - 1.16 (see [Version Notes](#version-notes)).
+A comprehensive inventory menu API for Spigot with pages support. Supports Bukkit/Spigot 1.7 - 1.20 (see [Version Notes](#version-notes)) (Future versions ought to work just fine too!).
 <p>
   <a target="_blank" href="https://github.com/SamJakob/SpiGUI/blob/master/LICENSE">
     <img alt="License" src="https://img.shields.io/github/license/SamJakob/SpiGUI?style=for-the-badge">
@@ -13,7 +13,7 @@ A comprehensive inventory menu API for Spigot with pages support. Supports Bukki
   <a target="_blank" href="https://jitpack.io/#com.samjakob/SpiGUI">
     <img alt="JitPack" src="https://img.shields.io/badge/dynamic/json?color=red&label=JitPack&query=%24.version&url=https%3A%2F%2Fjitpack.io%2Fapi%2Fbuilds%2Fcom.samjakob%2FSpiGUI%2FlatestOk&style=for-the-badge">
   </a>
-  <a target="_blank" href="https://javadoc.jitpack.io/com/samjakob/SpiGUI/latest/javadoc/index.html">
+  <a target="_blank" href="https://jitpack.io/com/github/SamJakob/SpiGUI/latest/javadoc/">
     <img alt="JavaDoc" src="https://img.shields.io/badge/dynamic/json?color=blue&label=JavaDoc&query=%24.version&url=https%3A%2F%2Fjitpack.io%2Fapi%2Fbuilds%2Fcom.samjakob%2FSpiGUI%2FlatestOk&style=for-the-badge">
   </a>
 </p>
@@ -29,9 +29,57 @@ A comprehensive inventory menu API for Spigot with pages support. Supports Bukki
 <br><br>
 
 ## Version Notes
-- I don't see a reason it shouldn't work in Spigot 1.7 or any version of Bukkit from 1.8 - 1.16 but it hasn't been tested on those versions.
-- This library has been tested on Spigot 1.8 and Spigot 1.16 and is expected to work on every version in-between.
-- The [ItemBuilder](https://github.com/SamJakob/SpiGUI/blob/master/src/main/java/com/samjakob/spigui/item/ItemBuilder.java) API does require that `api-version` be `"legacy"` (or not specified) for Spigot versions after 1.13.
+> _**IMPORTANT!**_ If you have an opinion on how backwards compatibility should be achieved with new versions, please
+> feel free to [drop a reply to this open discussion](https://github.com/SamJakob/SpiGUI/issues/21).
+
+- I don't see a reason it shouldn't work in Spigot 1.7 or any version of Bukkit from 1.8 - 1.20 but it hasn't been tested on each individual version.
+- This library has been tested on Spigot 1.8, Spigot 1.16, PaperSpigot 1.19, Spigot 1.20 and is expected to work on every versions in-between for most, if not all, forks of Spigot.
+- The [ItemBuilder](https://github.com/SamJakob/SpiGUI/blob/master/src/main/java/com/samjakob/spigui/item/ItemBuilder.java) API should work for all versions of Bukkit/Spigot unless you use the `ItemDataColor` (or `data` value) which relies on pre-1.13 item data values. (Though you can just use the relevant `Material` instead - e.g., instead of using `Material.WOOL` and `ItemDataColor.BLUE`, just use `Material.BLUE_WOOL`.)
+
+<br>
+
+## Installation
+
+You can very easily install SpiGUI using [JitPack](https://jitpack.io/#com.samjakob/SpiGUI).
+(The JitPack page contains instructions for Gradle, Maven, sbt, etc.)
+
+<details>
+<summary>Instructions for Gradle</summary>
+
+Just add the following to your `build.gradle` file:
+```groovy
+repositories {
+    // ...
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    // ...
+    implementation 'com.samjakob:SpiGUI:<insert latest version here>'
+}
+```
+
+<br>
+
+For distribution, you can just shade the library into your plugin JAR. On
+Gradle, this can be done by adding the following to the end of your
+`build.gradle`:
+
+```groovy
+jar {
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+```
+
+</details>
+
+If you aren't using a build system, you can just download the latest JAR and
+add it to your project's classpath (just make sure the SpiGUI classes are
+included in your JAR when you build it).
 
 <br>
 

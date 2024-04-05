@@ -15,10 +15,10 @@ import java.util.function.Predicate;
 
 /**
  * A helper class for creating or modifying ItemStacks.
- *
+ * <br>
  * The class wraps an ItemStack object and provides convenient chainable, 'builder-pattern' methods for
  * manipulating the stack's metadata.
- *
+ * <br>
  * The intention is that this class will be used in builder form - for example;
  * <pre>
  * new ItemBuilder(Material.SPONGE).name("&amp;cAlmighty sponge").amount(21).build();
@@ -91,12 +91,12 @@ public class ItemBuilder {
 
     /**
      * Returns either the display name of the item, if it exists, or null if it doesn't.
-     *
+     * <br>
      * You should note that this method fetches the name directly from the stack's {@link ItemMeta},
      * so you should take extra care when comparing names with color codes - particularly if you used the
      * {@link #name(String)} method as they will be in their translated sectional symbol (§) form,
      * rather than their 'coded' form (&amp;).
-     *
+     * <br>
      * For example, if you used {@link #name(String)} to set the name to '&amp;cMy Item', the output of this
      * method would be '§cMy Item'
      *
@@ -142,7 +142,7 @@ public class ItemBuilder {
      * Sets the lore of the item.
      * As with {@link #name(String)}, color codes will be replaced. Each string represents
      * a line of the lore.
-     *
+     * <br>
      * Lines will not be automatically wrapped or truncated, so it is recommended you take
      * some consideration into how the item will be rendered with the lore.
      *
@@ -150,9 +150,7 @@ public class ItemBuilder {
      * @return The {@link ItemBuilder} instance.
      */
     public ItemBuilder lore(List<String> lore) {
-        for(int i = 0; i < lore.size(); i++){
-            lore.set(i, ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', lore.get(i)));
-        }
+        lore.replaceAll(ChatColor.RESET + textToTranslate -> ChatColor.translateAlternateColorCodes('&', textToTranslate));
 
         ItemMeta stackMeta = stack.getItemMeta();
         stackMeta.setLore(lore);
@@ -163,8 +161,8 @@ public class ItemBuilder {
     /**
      * Gets the lore of the item as a list of strings. Each string represents a line of the
      * item's lore in-game.
-     *
-     * As with {@link #name(String)} it should be note that color-coded lore lines will
+     * <br>
+     * As with {@link #name(String)}, it should be noted that color-coded lore lines will
      * be returned with the colors codes already translated.
      *
      * @return The lore of the item.
@@ -178,7 +176,7 @@ public class ItemBuilder {
      * An alias for {@link #durability(short)} that takes an {@link ItemDataColor} as an
      * argument instead. This is to improve code readability when working with items such
      * as glass panes, where the data value represents a glass pane's color.
-     *
+     * <br>
      * This method will still be functional for items where the data value does not represent
      * the item's color, however it will obviously be nonsensical.
      *
@@ -221,19 +219,19 @@ public class ItemBuilder {
 
     /**
      * Essentially a proxy for {@link ItemDataColor#getByValue(short)}.
-     *
+     * <br>
      * Similar to {@link #getDurability()} however it returns the value as an {@link ItemDataColor}
      * where it is applicable, or null where it isn't.
      *
      * @return The appropriate {@link ItemDataColor} of the item or null.
      */
     public ItemDataColor getColor() {
-        return ItemDataColor.getByValue((short) stack.getDurability());
+        return ItemDataColor.getByValue(stack.getDurability());
     }
 
     /**
      * Adds the specified enchantment to the stack.
-     *
+     * <br>
      * This method uses {@link ItemStack#addUnsafeEnchantment(Enchantment, int)} rather than {@link ItemStack#addEnchantment(Enchantment, int)}
      * to avoid the associated checks of whether level is within the range for the enchantment.
      *
@@ -286,7 +284,7 @@ public class ItemBuilder {
     /**
      * If the item has {@link SkullMeta} (i.e. if the item is a skull), this can
      * be used to set the skull's owner (i.e. the player the skull represents.)
-     *
+     * <br>
      * This also sets the skull's data value to 3 for 'player head', as setting
      * the skull's owner doesn't make much sense for the mob skulls.
      *
@@ -308,10 +306,10 @@ public class ItemBuilder {
 
     /**
      * This is used to, inline, perform an operation if a given condition is true.
-     *
+     * <br>
      * The {@link ItemBuilder} instance is supplied to both the predicate (condition) and result function.
      * The result of <code>then</code> is ignored as the ItemBuilder reference is passed to it.
-     *
+     * <br>
      * Example:
      * <pre>
      * // Renames the ItemStack, if and only if, the stack's type is Acacia Doors.
@@ -341,7 +339,7 @@ public class ItemBuilder {
 
     /**
      * Returns the {@link ItemStack} that the {@link ItemBuilder} instance represents.
-     *
+     * <br>
      * The modifications are performed as they are called, so this method simply returns
      * the class's private stack field.
      *
