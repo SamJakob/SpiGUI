@@ -30,7 +30,6 @@ import java.util.function.Predicate;
  */
 public class ItemBuilder {
 
-    /** The internal ItemStack object that this class wraps. */
     private final ItemStack stack;
 
     /* CONSTRUCT */
@@ -85,7 +84,7 @@ public class ItemBuilder {
      */
     public ItemBuilder name(String name) {
         ItemMeta stackMeta = stack.getItemMeta();
-        stackMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
+        stackMeta.setDisplayName(ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', name));
         stack.setItemMeta(stackMeta);
         return this;
     }
@@ -151,7 +150,7 @@ public class ItemBuilder {
      * @return The {@link ItemBuilder} instance.
      */
     public ItemBuilder lore(List<String> lore) {
-        lore.replaceAll(textToTranslate -> ChatColor.translateAlternateColorCodes('&', textToTranslate));
+        lore.replaceAll(textToTranslate -> ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', textToTranslate));
 
         ItemMeta stackMeta = stack.getItemMeta();
         stackMeta.setLore(lore);
