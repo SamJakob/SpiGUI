@@ -120,11 +120,9 @@ public class SGMenuListener implements Listener {
             return;
         }
 
-        // If the action is blocked, instantly deny the event and do nothing
-        // else.
+        // If the action is blocked, instantly deny the event
         if (clickedGui.blockedMenuActions.stream().anyMatch(action -> action == event.getAction())) {
             event.setResult(Event.Result.DENY);
-            return;
         }
 
         // Check if the GUI is owner by the current plugin
