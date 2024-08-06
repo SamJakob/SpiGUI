@@ -13,7 +13,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
 
@@ -26,34 +25,6 @@ import java.util.Set;
  * your plugin instance to SpiGUI's constructor.
  */
 public class SGMenuListener implements Listener {
-
-    /**
-     * Any click types not in this array will be immediately prevented in
-     * SpiGUI inventories without further processing (i.e., the button's
-     * listener will not be called).
-     */
-    private static final ClickType[] PERMITTED_MENU_CLICK_TYPES = new ClickType[]{
-        ClickType.LEFT,
-        ClickType.RIGHT,
-    };
-
-    /**
-     * Any actions in this list will be blocked immediately without further
-     * processing if they occur in a SpiGUI menu.
-     */
-    private static final InventoryAction[] BLOCKED_MENU_ACTIONS = new InventoryAction[] {
-        InventoryAction.MOVE_TO_OTHER_INVENTORY,
-        InventoryAction.COLLECT_TO_CURSOR,
-    };
-
-    /**
-     * Any actions in this list will be blocked if they occur in the adjacent
-     * inventory to an SGMenu.
-     */
-    private static final InventoryAction[] BLOCKED_ADJACENT_ACTIONS = new InventoryAction[] {
-        InventoryAction.MOVE_TO_OTHER_INVENTORY,
-        InventoryAction.COLLECT_TO_CURSOR,
-    };
 
     /** The plugin that this listener is registered for. */
     private final JavaPlugin owner;
@@ -134,28 +105,27 @@ public class SGMenuListener implements Listener {
      */
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-
         // This should only run for SpiGUI menus, so if the clicked
         // inventory was not a SpiGUI menu (i.e., an SGMenu), don't
         // continue.
         if (shouldIgnoreInventoryEvent(event.getClickedInventory())) return;
 
+        // Get the instance of the SpiGUI that was clicked.
+        SGMenu clickedGui = (SGMenu) event.getClickedInventory().getHolder();
+
         // If the click type is not permitted, instantly deny the event and
         // do nothing else.
-        if (Arrays.stream(PERMITTED_MENU_CLICK_TYPES).noneMatch(type -> type == event.getClick())) {
+        if (clickedGui.permittedMenuClickTypes.stream().noneMatch(type -> type == event.getClick())) {
             event.setResult(Event.Result.DENY);
             return;
         }
 
         // If the action is blocked, instantly deny the event and do nothing
         // else.
-        if (Arrays.stream(BLOCKED_MENU_ACTIONS).anyMatch(action -> action == event.getAction())) {
+        if (clickedGui.blockedMenuActions.stream().anyMatch(action -> action == event.getAction())) {
             event.setResult(Event.Result.DENY);
             return;
         }
-
-        // Get the instance of the SpiGUI that was clicked.
-        SGMenu clickedGui = (SGMenu) event.getClickedInventory().getHolder();
 
         // Check if the GUI is owner by the current plugin
         // (if not, it'll be deferred to the SGMenuListener registered
@@ -215,7 +185,6 @@ public class SGMenuListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAdjacentInventoryClick(InventoryClickEvent event) {
-
         // If the clicked inventory is not adjacent to a SpiGUI menu, ignore
         // the click event.
         if (event.getView().getTopInventory() == null ||
@@ -225,12 +194,14 @@ public class SGMenuListener implements Listener {
         // ignore the click event.
         if (event.getClickedInventory() == event.getView().getTopInventory()) return;
 
+        // Get the instance of the SpiGUI that was clicked.
+        SGMenu clickedGui = (SGMenu) event.getClickedInventory().getHolder();
+
         // If the clicked inventory is not a SpiGUI menu, block the event if
         // it is one of the blocked actions.
-        if (Arrays.stream(BLOCKED_ADJACENT_ACTIONS).anyMatch(action -> action == event.getAction())) {
+        if (clickedGui.blockedAdjacentActions.stream().anyMatch(action -> action == event.getAction())) {
             event.setResult(Event.Result.DENY);
         }
-
     }
 
     /**
