@@ -124,7 +124,7 @@ public class SGMenu implements InventoryHolder {
      * @param permittedMenuClickTypes the permitted menu click types
      */
     public SGMenu(JavaPlugin owner, SpiGUI spiGUI, String name, int rowsPerPage, String tag, ClickType... permittedMenuClickTypes) {
-        this(owner, spiGUI, name, rowsPerPage, tag, permittedMenuClickTypes.length == 0 ? permittedMenuClickTypes : DEFAULT_PERMITTED_MENU_CLICK_TYPES, DEFAULT_BLOCKED_MENU_ACTIONS, DEFAULT_BLOCKED_ADJACENT_ACTIONS);
+        this(owner, spiGUI, name, rowsPerPage, tag, permittedMenuClickTypes.length > 0 ? permittedMenuClickTypes : DEFAULT_PERMITTED_MENU_CLICK_TYPES, DEFAULT_BLOCKED_MENU_ACTIONS, DEFAULT_BLOCKED_ADJACENT_ACTIONS);
     }
 
     /**
