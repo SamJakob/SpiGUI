@@ -25,7 +25,7 @@ import java.util.function.Consumer;
  * <br><br>
  * You do not instantiate this class when you need it - as you would
  * have done with the older version of the library - rather you make a
- * call to {@link SpiGUI#create(String, int)}, {@link SpiGUI#create(String, int, String, ClickType...)} or {@link SpiGUI#create(String, int, String, ClickType[], InventoryAction[], InventoryAction[])}
+ * call to {@link SpiGUI#create(String, int)} or {@link SpiGUI#create(String, int, String)}
  * from your plugin's {@link SpiGUI} instance.
  * <br><br>
  * This creates an inventory that is already associated with your plugin.
@@ -77,19 +77,19 @@ public class SGMenu implements InventoryHolder {
      * this menu without further processing (i.e., the button's
      * listener will not be called).
      */
-    public final ArrayList<ClickType> permittedMenuClickTypes;
+    private ClickType[] permittedMenuClickTypes;
 
     /**
      * Any actions in this list will be blocked immediately without further
      * processing if they occur in a SpiGUI menu.
      */
-    public final ArrayList<InventoryAction> blockedMenuActions;
+    private InventoryAction[] blockedMenuActions;
 
     /**
      * Any actions in this list will be blocked if they occur in the adjacent
      * inventory to an SGMenu.
      */
-    public final ArrayList<InventoryAction> blockedAdjacentActions;
+    private InventoryAction[] blockedAdjacentActions;
 
     /// DEFAULT PERMITTED / BLOCKED ACTIONS ///
 
@@ -109,26 +109,7 @@ public class SGMenu implements InventoryHolder {
     };
 
     /**
-     * <b>Intended for internal use only. Use {@link SpiGUI#create(String, int)}, {@link SpiGUI#create(String, int, String, ClickType...)} or {@link SpiGUI#create(String, int, String, ClickType[], InventoryAction[], InventoryAction[])}!</b><br>
-     * Used by the library internally to construct an SGMenu.
-     * <br>
-     * The name parameter is color code translated.
-     * <br>
-     * Will use default permitted click types and blocked menu actions
-     *
-     * @param owner                   the JavaPlugin that owns this menu
-     * @param spiGUI                  the SpiGUI instance
-     * @param name                    the name of the menu
-     * @param rowsPerPage             the number of rows per page in the menu
-     * @param tag                     the tag associated with the menu
-     * @param permittedMenuClickTypes the permitted menu click types
-     */
-    public SGMenu(JavaPlugin owner, SpiGUI spiGUI, String name, int rowsPerPage, String tag, ClickType... permittedMenuClickTypes) {
-        this(owner, spiGUI, name, rowsPerPage, tag, permittedMenuClickTypes.length > 0 ? permittedMenuClickTypes : DEFAULT_PERMITTED_MENU_CLICK_TYPES, DEFAULT_BLOCKED_MENU_ACTIONS, DEFAULT_BLOCKED_ADJACENT_ACTIONS);
-    }
-
-    /**
-     * <b>Intended for internal use only. Use {@link SpiGUI#create(String, int)}, {@link SpiGUI#create(String, int, String, ClickType...)} or {@link SpiGUI#create(String, int, String, ClickType[], InventoryAction[], InventoryAction[])}!</b><br>
+     * <b>Intended for internal use only. Use {@link SpiGUI#create(String, int)} or {@link SpiGUI#create(String, int, String)}!</b><br>
      * Used by the library internally to construct an SGMenu.
      * <br>
      * The name parameter is color code translated.
@@ -138,11 +119,8 @@ public class SGMenu implements InventoryHolder {
      * @param name                       The name of the menu.
      * @param rowsPerPage                The number of rows per page in the menu.
      * @param tag                        The tag associated with this menu.
-     * @param permittedMenuClickTypes    An array of permitted ClickTypes for this menu.
-     * @param blockedMenuActions         An array of blocked InventoryActions for this menu.
-     * @param blockedAdjacentActions     An array of blocked InventoryActions for adjacent menus.
      */
-    public SGMenu(JavaPlugin owner, SpiGUI spiGUI, String name, int rowsPerPage, String tag, ClickType[] permittedMenuClickTypes, InventoryAction[] blockedMenuActions, InventoryAction[] blockedAdjacentActions) {
+    public SGMenu(JavaPlugin owner, SpiGUI spiGUI, String name, int rowsPerPage, String tag) {
         this.owner = owner;
         this.spiGUI = spiGUI;
         this.name = ChatColor.translateAlternateColorCodes('&', name);
@@ -153,10 +131,6 @@ public class SGMenu implements InventoryHolder {
         this.stickiedSlots = new HashSet<>();
 
         this.currentPage = 0;
-
-        this.permittedMenuClickTypes = new ArrayList<>(Arrays.asList(permittedMenuClickTypes));
-        this.blockedMenuActions = new ArrayList<>(Arrays.asList(blockedMenuActions));
-        this.blockedAdjacentActions = new ArrayList<>(Arrays.asList(blockedAdjacentActions));
     }
 
     /// INVENTORY SETTINGS ///
@@ -658,6 +632,60 @@ public class SGMenu implements InventoryHolder {
      */
     public void setOnPageChange(Consumer<SGMenu> onPageChange) {
         this.onPageChange = onPageChange;
+    }
+
+    /**
+     * Returns the permitted menu click types.
+     *
+     * @return an array of permitted menu click types
+     */
+    public ClickType[] getPermittedMenuClickTypes() {
+        return this.permittedMenuClickTypes;
+    }
+
+    /**
+     * Returns an array of blocked menu actions for the current Inventory.
+     *
+     * @return an array of blocked menu actions
+     */
+    public InventoryAction[] getBlockedMenuActions() {
+        return this.blockedMenuActions;
+    }
+
+    /**
+     * Returns the blocked adjacent actions for this object.
+     *
+     * @return An array of InventoryAction objects representing the blocked adjacent actions.
+     */
+    public InventoryAction[] getBlockedAdjacentActions() {
+        return this.blockedAdjacentActions;
+    }
+
+    /**
+     * Sets the permitted menu click types.
+     *
+     * @param clickTypes One or more click types you want to allow for this menu.
+     */
+    public void setPermittedMenuClickTypes(ClickType... clickTypes) {
+        this.permittedMenuClickTypes = clickTypes;
+    }
+
+    /**
+     * Sets the blocked menu actions for the inventory.
+     *
+     * @param actions the menu actions to be blocked
+     */
+    public void setBlockedMenuActions(InventoryAction... actions) {
+        this.blockedMenuActions = actions;
+    }
+
+    /**
+     * Sets the blocked adjacent actions for this object.
+     *
+     * @param actions The actions to be blocked.
+     */
+    public void setBlockedAdjacentActions(InventoryAction... actions) {
+        this.blockedAdjacentActions = actions;
     }
 
     /// INVENTORY API ///

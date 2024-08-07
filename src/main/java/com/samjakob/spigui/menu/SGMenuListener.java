@@ -13,6 +13,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
 
@@ -115,13 +116,13 @@ public class SGMenuListener implements Listener {
 
         // If the click type is not permitted, instantly deny the event and
         // do nothing else.
-        if (clickedGui.permittedMenuClickTypes.stream().noneMatch(type -> type == event.getClick())) {
+        if (Arrays.stream(clickedGui.getPermittedMenuClickTypes()).noneMatch(type -> type == event.getClick())) {
             event.setResult(Event.Result.DENY);
             return;
         }
 
         // If the action is blocked, instantly deny the event
-        if (clickedGui.blockedMenuActions.stream().anyMatch(action -> action == event.getAction())) {
+        if (Arrays.stream(clickedGui.getBlockedMenuActions()).anyMatch(action -> action == event.getAction())) {
             event.setResult(Event.Result.DENY);
         }
 
@@ -197,7 +198,7 @@ public class SGMenuListener implements Listener {
 
         // If the clicked inventory is not a SpiGUI menu, block the event if
         // it is one of the blocked actions.
-        if (clickedGui.blockedAdjacentActions.stream().anyMatch(action -> action == event.getAction())) {
+        if (Arrays.stream(clickedGui.getBlockedAdjacentActions()).anyMatch(action -> action == event.getAction())) {
             event.setResult(Event.Result.DENY);
         }
     }

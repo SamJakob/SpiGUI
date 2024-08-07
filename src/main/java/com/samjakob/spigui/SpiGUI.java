@@ -6,8 +6,6 @@ import com.samjakob.spigui.menu.SGOpenMenu;
 import com.samjakob.spigui.toolbar.SGDefaultToolbarBuilder;
 import com.samjakob.spigui.toolbar.SGToolbarBuilder;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -109,7 +107,7 @@ public class SpiGUI {
     }
 
     /**
-     * An alias for {@link #create(String, int, String, ClickType...)} with the tag set to null.
+     * An alias for {@link #create(String, int, String)} with the tag set to null.
      * Use this method if you don't need the tag, or you don't know what it's for.
      * <br>
      * The rows parameter is used in place of the size parameter of the
@@ -171,24 +169,8 @@ public class SpiGUI {
      * @param tag The inventory's tag.
      * @return The created inventory.
      */
-    public SGMenu create(String name, int rows, String tag, ClickType... permittedMenuClickTypes) {
-        return new SGMenu(plugin, this, name, rows, tag, permittedMenuClickTypes);
-    }
-
-    /**
-     * Creates an inventory with the given name, rows, tag, permittedMenuClickTypes, blockedMenuActions,
-     * and blockedAdjacentActions.
-     *
-     * @param name The display name of the inventory.
-     * @param rows The number of rows the inventory should have per page.
-     * @param tag The inventory's tag.
-     * @param permittedMenuClickTypes The permitted menu click types.
-     * @param blockedMenuActions The blocked menu actions.
-     * @param blockedAdjacentActions The blocked adjacent actions.
-     * @return The created inventory.
-     */
-    public SGMenu create(String name, int rows, String tag, ClickType[] permittedMenuClickTypes, InventoryAction[] blockedMenuActions, InventoryAction[] blockedAdjacentActions) {
-        return new SGMenu(plugin, this, name, rows, tag, permittedMenuClickTypes, blockedMenuActions, blockedAdjacentActions);
+    public SGMenu create(String name, int rows, String tag) {
+        return new SGMenu(plugin, this, name, rows, tag);
     }
 
     /**
