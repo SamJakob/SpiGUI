@@ -77,19 +77,19 @@ public class SGMenu implements InventoryHolder {
      * this menu without further processing (i.e., the button's
      * listener will not be called).
      */
-    private ClickType[] permittedMenuClickTypes;
+    private HashSet<ClickType> permittedMenuClickTypes;
 
     /**
      * Any actions in this list will be blocked immediately without further
      * processing if they occur in a SpiGUI menu.
      */
-    private InventoryAction[] blockedMenuActions;
+    private HashSet<InventoryAction> blockedMenuActions;
 
     /**
      * Any actions in this list will be blocked if they occur in the adjacent
      * inventory to an SGMenu.
      */
-    private InventoryAction[] blockedAdjacentActions;
+    private HashSet<InventoryAction> blockedAdjacentActions;
 
     /// DEFAULT PERMITTED / BLOCKED ACTIONS ///
 
@@ -637,27 +637,27 @@ public class SGMenu implements InventoryHolder {
     /**
      * Returns the permitted menu click types.
      *
-     * @return an array of permitted menu click types
+     * @return A hashSet of permitted menu click types
      */
-    public ClickType[] getPermittedMenuClickTypes() {
+    public HashSet<ClickType> getPermittedMenuClickTypes() {
         return this.permittedMenuClickTypes;
     }
 
     /**
      * Returns an array of blocked menu actions for the current Inventory.
      *
-     * @return an array of blocked menu actions
+     * @return A hashSet of blocked menu actions
      */
-    public InventoryAction[] getBlockedMenuActions() {
+    public HashSet<InventoryAction> getBlockedMenuActions() {
         return this.blockedMenuActions;
     }
 
     /**
      * Returns the blocked adjacent actions for this object.
      *
-     * @return An array of InventoryAction objects representing the blocked adjacent actions.
+     * @return A hashSet of InventoryAction objects representing the blocked adjacent actions.
      */
-    public InventoryAction[] getBlockedAdjacentActions() {
+    public HashSet<InventoryAction> getBlockedAdjacentActions() {
         return this.blockedAdjacentActions;
     }
 
@@ -667,7 +667,7 @@ public class SGMenu implements InventoryHolder {
      * @param clickTypes One or more click types you want to allow for this menu.
      */
     public void setPermittedMenuClickTypes(ClickType... clickTypes) {
-        this.permittedMenuClickTypes = clickTypes;
+        this.permittedMenuClickTypes = new HashSet<>(Arrays.asList(clickTypes));
     }
 
     /**
@@ -676,7 +676,7 @@ public class SGMenu implements InventoryHolder {
      * @param actions the menu actions to be blocked
      */
     public void setBlockedMenuActions(InventoryAction... actions) {
-        this.blockedMenuActions = actions;
+        this.blockedMenuActions = new HashSet<>(Arrays.asList(actions));
     }
 
     /**
@@ -685,7 +685,62 @@ public class SGMenu implements InventoryHolder {
      * @param actions The actions to be blocked.
      */
     public void setBlockedAdjacentActions(InventoryAction... actions) {
-        this.blockedAdjacentActions = actions;
+        this.blockedAdjacentActions = new HashSet<>(Arrays.asList(actions));
+    }
+
+    /**
+     * Adds a permitted click type to the menu.
+     *
+     * @param clickType the click type to be added
+     */
+    public void addPermittedClickType(ClickType clickType) {
+        this.permittedMenuClickTypes.add(clickType);
+    }
+
+    /**
+     * Adds the given InventoryAction to the list of blocked menu actions.
+     * Blocked menu actions are actions that are not allowed to be performed on the inventory menu.
+     *
+     * @param action The InventoryAction to be added to the blocked menu actions list.
+     */
+    public void addBlockedMenuAction(InventoryAction action) {
+        this.blockedMenuActions.add(action);
+    }
+
+    /**
+     * Adds a blocked adjacent action to the list of blocked adjacent actions.
+     *
+     * @param action The inventory action to be added as blocked adjacent action.
+     */
+    public void addBlockedAdjacentAction(InventoryAction action) {
+        this.getBlockedAdjacentActions().add(action);
+    }
+
+    /**
+     * Removes a permitted click type from the list of permitted menu click types.
+     *
+     * @param clickType the click type to be removed
+     */
+    public void removePermittedClickType(ClickType clickType) {
+        this.permittedMenuClickTypes.remove(clickType);
+    }
+
+    /**
+     * Removes the specified InventoryAction from the list of blocked menu actions.
+     *
+     * @param action the InventoryAction to be removed
+     */
+    public void removeBlockedMenuAction(InventoryAction action) {
+        this.blockedMenuActions.remove(action);
+    }
+
+    /**
+     * Removes the given action from the list of blocked adjacent actions.
+     *
+     * @param action The action to be removed
+     */
+    public void removeBlockedAdjacentAction(InventoryAction action) {
+        this.getBlockedAdjacentActions().remove(action);
     }
 
     /// INVENTORY API ///
