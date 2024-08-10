@@ -7,6 +7,8 @@ import com.samjakob.spigui.toolbar.SGToolbarButtonType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,7 +25,7 @@ import java.util.function.Consumer;
  * <br><br>
  * You do not instantiate this class when you need it - as you would
  * have done with the older version of the library - rather you make a
- * call to {@link SpiGUI#create(String, int)} (or {@link SpiGUI#create(String, int, String)})
+ * call to {@link SpiGUI#create(String, int)} or {@link SpiGUI#create(String, int, String)}
  * from your plugin's {@link SpiGUI} instance.
  * <br><br>
  * This creates an inventory that is already associated with your plugin.
@@ -71,19 +73,52 @@ public class SGMenu implements InventoryHolder {
     private Consumer<SGMenu> onPageChange;
 
     /**
+     * Any click types not in this array will be immediately prevented in
+     * this menu without further processing (i.e., the button's
+     * listener will not be called).
+     */
+    private HashSet<ClickType> permittedMenuClickTypes;
+
+    /**
+     * Any actions in this list will be blocked immediately without further
+     * processing if they occur in a SpiGUI menu.
+     */
+    private HashSet<InventoryAction> blockedMenuActions;
+
+    /**
+     * Any actions in this list will be blocked if they occur in the adjacent
+     * inventory to an SGMenu.
+     */
+    private HashSet<InventoryAction> blockedAdjacentActions;
+
+    /// DEFAULT PERMITTED / BLOCKED ACTIONS ///
+
+    private static final ClickType[] DEFAULT_PERMITTED_MENU_CLICK_TYPES = new ClickType[]{
+            ClickType.LEFT,
+            ClickType.RIGHT
+    };
+
+    private static final InventoryAction[] DEFAULT_BLOCKED_MENU_ACTIONS = new InventoryAction[] {
+            InventoryAction.MOVE_TO_OTHER_INVENTORY,
+            InventoryAction.COLLECT_TO_CURSOR
+    };
+
+    private static final InventoryAction[] DEFAULT_BLOCKED_ADJACENT_ACTIONS = new InventoryAction[] {
+            InventoryAction.MOVE_TO_OTHER_INVENTORY,
+            InventoryAction.COLLECT_TO_CURSOR
+    };
+
+    /**
      * <b>Intended for internal use only. Use {@link SpiGUI#create(String, int)} or {@link SpiGUI#create(String, int, String)}!</b><br>
      * Used by the library internally to construct an SGMenu.
      * <br>
      * The name parameter is color code translated.
      *
-     * @param owner The plugin the inventory should be associated with.
-     * @param spiGUI The SpiGUI that created this inventory.
-     * @param name The display name of the inventory.
-     * @param rowsPerPage The number of rows per page.
-     * @param tag The inventory's tag.
-     *
-     * @see SpiGUI#create(String, int)
-     * @see SpiGUI#create(String, int, String)
+     * @param owner                      The JavaPlugin that owns this menu.
+     * @param spiGUI                     The SpiGUI instance associated with this menu.
+     * @param name                       The name of the menu.
+     * @param rowsPerPage                The number of rows per page in the menu.
+     * @param tag                        The tag associated with this menu.
      */
     public SGMenu(JavaPlugin owner, SpiGUI spiGUI, String name, int rowsPerPage, String tag) {
         this.owner = owner;
@@ -597,6 +632,115 @@ public class SGMenu implements InventoryHolder {
      */
     public void setOnPageChange(Consumer<SGMenu> onPageChange) {
         this.onPageChange = onPageChange;
+    }
+
+    /**
+     * Returns the permitted menu click types.
+     *
+     * @return A hashSet of permitted menu click types
+     */
+    public HashSet<ClickType> getPermittedMenuClickTypes() {
+        return this.permittedMenuClickTypes;
+    }
+
+    /**
+     * Returns an array of blocked menu actions for the current Inventory.
+     *
+     * @return A hashSet of blocked menu actions
+     */
+    public HashSet<InventoryAction> getBlockedMenuActions() {
+        return this.blockedMenuActions;
+    }
+
+    /**
+     * Returns the blocked adjacent actions for this object.
+     *
+     * @return A hashSet of InventoryAction objects representing the blocked adjacent actions.
+     */
+    public HashSet<InventoryAction> getBlockedAdjacentActions() {
+        return this.blockedAdjacentActions;
+    }
+
+    /**
+     * Sets the permitted menu click types.
+     *
+     * @param clickTypes One or more click types you want to allow for this menu.
+     */
+    public void setPermittedMenuClickTypes(ClickType... clickTypes) {
+        this.permittedMenuClickTypes = new HashSet<>(Arrays.asList(clickTypes));
+    }
+
+    /**
+     * Sets the blocked menu actions for the inventory.
+     *
+     * @param actions the menu actions to be blocked
+     */
+    public void setBlockedMenuActions(InventoryAction... actions) {
+        this.blockedMenuActions = new HashSet<>(Arrays.asList(actions));
+    }
+
+    /**
+     * Sets the blocked adjacent actions for this object.
+     *
+     * @param actions The actions to be blocked.
+     */
+    public void setBlockedAdjacentActions(InventoryAction... actions) {
+        this.blockedAdjacentActions = new HashSet<>(Arrays.asList(actions));
+    }
+
+    /**
+     * Adds a permitted click type to the menu.
+     *
+     * @param clickType the click type to be added
+     */
+    public void addPermittedClickType(ClickType clickType) {
+        this.permittedMenuClickTypes.add(clickType);
+    }
+
+    /**
+     * Adds the given InventoryAction to the list of blocked menu actions.
+     * Blocked menu actions are actions that are not allowed to be performed on the inventory menu.
+     *
+     * @param action The InventoryAction to be added to the blocked menu actions list.
+     */
+    public void addBlockedMenuAction(InventoryAction action) {
+        this.blockedMenuActions.add(action);
+    }
+
+    /**
+     * Adds a blocked adjacent action to the list of blocked adjacent actions.
+     *
+     * @param action The inventory action to be added as blocked adjacent action.
+     */
+    public void addBlockedAdjacentAction(InventoryAction action) {
+        this.getBlockedAdjacentActions().add(action);
+    }
+
+    /**
+     * Removes a permitted click type from the list of permitted menu click types.
+     *
+     * @param clickType the click type to be removed
+     */
+    public void removePermittedClickType(ClickType clickType) {
+        this.permittedMenuClickTypes.remove(clickType);
+    }
+
+    /**
+     * Removes the specified InventoryAction from the list of blocked menu actions.
+     *
+     * @param action the InventoryAction to be removed
+     */
+    public void removeBlockedMenuAction(InventoryAction action) {
+        this.blockedMenuActions.remove(action);
+    }
+
+    /**
+     * Removes the given action from the list of blocked adjacent actions.
+     *
+     * @param action The action to be removed
+     */
+    public void removeBlockedAdjacentAction(InventoryAction action) {
+        this.getBlockedAdjacentActions().remove(action);
     }
 
     /// INVENTORY API ///
