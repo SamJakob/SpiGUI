@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'com.samjakob'
-version '1.3.1'
+version '1.4.0'
 uri "https://github.com/SamJakob/SpiGUI"
 
 java {
@@ -94,8 +94,8 @@ publishing {
                     : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
 
             credentials {
-                username = project.properties['ossrhUsername']
-                password = project.properties['ossrhPassword']
+                username = ossrhUsername
+                password = ossrhPassword
             }
         }
     }

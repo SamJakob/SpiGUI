@@ -30,6 +30,9 @@ import java.util.function.Predicate;
  */
 public class ItemBuilder {
 
+    /**
+     * The item stack being built.
+     */
     private final ItemStack stack;
 
     /* CONSTRUCT */

@@ -93,16 +93,26 @@ public class SGMenu implements InventoryHolder {
 
     /// DEFAULT PERMITTED / BLOCKED ACTIONS ///
 
+    /**
+     * The default set of actions that are permitted if they occur in an SGMenu.
+     */
     private static final ClickType[] DEFAULT_PERMITTED_MENU_CLICK_TYPES = new ClickType[]{
             ClickType.LEFT,
             ClickType.RIGHT
     };
 
+    /**
+     * The default set of actions that are blocked if they occur in an SGMenu.
+     */
     private static final InventoryAction[] DEFAULT_BLOCKED_MENU_ACTIONS = new InventoryAction[] {
             InventoryAction.MOVE_TO_OTHER_INVENTORY,
             InventoryAction.COLLECT_TO_CURSOR
     };
 
+    /**
+     * The default set of actions that are blocked if they occur in the adjacent
+     * inventory to an SGMenu.
+     */
     private static final InventoryAction[] DEFAULT_BLOCKED_ADJACENT_ACTIONS = new InventoryAction[] {
             InventoryAction.MOVE_TO_OTHER_INVENTORY,
             InventoryAction.COLLECT_TO_CURSOR
