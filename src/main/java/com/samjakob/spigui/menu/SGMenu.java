@@ -83,13 +83,13 @@ public class SGMenu implements InventoryHolder {
      * Any actions in this list will be blocked immediately without further
      * processing if they occur in a SpiGUI menu.
      */
-    private HashSet<InventoryAction> blockedMenuActions;
+    private HashSet<InventoryAction> blockedMenuActions = new HashSet<>(Arrays.asList(DEFAULT_BLOCKED_MENU_ACTIONS));
 
     /**
      * Any actions in this list will be blocked if they occur in the adjacent
      * inventory to an SGMenu.
      */
-    private HashSet<InventoryAction> blockedAdjacentActions;
+    private HashSet<InventoryAction> blockedAdjacentActions = new HashSet<>(Arrays.asList(DEFAULT_BLOCKED_ADJACENT_ACTIONS));
 
     /// DEFAULT PERMITTED / BLOCKED ACTIONS ///
 
@@ -130,7 +130,7 @@ public class SGMenu implements InventoryHolder {
      * @param rowsPerPage                The number of rows per page in the menu.
      * @param tag                        The tag associated with this menu.
      */
-    public SGMenu(JavaPlugin owner, SpiGUI spiGUI, String name, int rowsPerPage, String tag) {
+    public SGMenu(JavaPlugin owner, SpiGUI spiGUI, String name, int rowsPerPage, String tag, ClickType... clickTypes) {
         this.owner = owner;
         this.spiGUI = spiGUI;
         this.name = ChatColor.translateAlternateColorCodes('&', name);
@@ -141,6 +141,8 @@ public class SGMenu implements InventoryHolder {
         this.stickiedSlots = new HashSet<>();
 
         this.currentPage = 0;
+
+        this.permittedMenuClickTypes = clickTypes.length > 0 ? new HashSet<>(Arrays.asList(clickTypes)) : new HashSet<>(Arrays.asList(DEFAULT_PERMITTED_MENU_CLICK_TYPES));
     }
 
     /// INVENTORY SETTINGS ///
