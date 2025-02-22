@@ -19,3 +19,7 @@ dependencies {
     // MockBukkit
     testImplementation("org.mockbukkit.mockbukkit:mockbukkit-v1.21:4.33.5")
 }
+
+tasks.withType<Jar> {
+    archiveBaseName.set("SpiGUI-core")
+}

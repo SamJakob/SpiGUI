@@ -1,15 +1,10 @@
 package com.samjakob.spigui.item;
 
 /**
- * Items such as glass panes can have variable color. This color is
- * set using durability values which is understandable from an
- * efficiency perspective however it is rather unintuitive and the values
- * are not clear or memorable.
+ * Items such as glass panes can have variable color. This color is set using durability values which is understandable
+ * from an efficiency perspective however it is rather unintuitive and the values are not clear or memorable.
  *
- * <p>
- * This class allows those damage values to be referred to by the name
- * of the color they represent.
- * </p>
+ * <p>This class allows those damage values to be referred to by the name of the color they represent.
  *
  * @author SamJakob
  * @version 2.0.0
@@ -49,15 +44,13 @@ public enum ItemDataColor {
     /** Value is 15. Use BLACK_WOOL for 1.13+ */
     BLACK((short) 15);
 
-    /**
-     * The durability value of the color.
-     */
+    /** The durability value of the color. */
     private final short value;
 
     /**
      * Define an {@link ItemDataColor} based on a given short value.
-     * @param value The color value (as a durability value).
-     *              Must be between 0 and 15, per Minecraft's color mapping.
+     *
+     * @param value The color value (as a durability value). Must be between 0 and 15, per Minecraft's color mapping.
      */
     ItemDataColor(short value) {
         // Sanitize the input value.
@@ -78,8 +71,7 @@ public enum ItemDataColor {
     }
 
     /**
-     * Returns an {@link ItemDataColor} as found by its damage value or
-     * null if there isn't one.
+     * Returns an {@link ItemDataColor} as found by its damage value or null if there isn't one.
      *
      * @param value The corresponding damage value of the color.
      * @return The {@link ItemDataColor} associated with <code>value</code> or null if there isn't one.
@@ -91,5 +83,4 @@ public enum ItemDataColor {
 
         return null;
     }
-
 }

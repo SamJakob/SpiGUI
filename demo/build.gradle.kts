@@ -11,5 +11,5 @@ tasks.withType<Jar> {
         include("**")
     }
 
-    archiveBaseName.set("SpiGUIDemo")
+    archiveBaseName.set("SpiGUI-demo")
 }

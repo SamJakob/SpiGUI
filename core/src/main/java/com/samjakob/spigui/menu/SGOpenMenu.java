@@ -2,9 +2,7 @@ package com.samjakob.spigui.menu;
 
 import org.bukkit.entity.Player;
 
-/**
- * Used to refer to a player's "viewing session" of a given menu.
- */
+/** Used to refer to a player's "viewing session" of a given menu. */
 public class SGOpenMenu {
 
     /** The {@link SGMenu} that is currently open. */
@@ -14,6 +12,7 @@ public class SGOpenMenu {
 
     /**
      * Pairs an {@link SGMenu} instance with a player viewing that menu.
+     *
      * @param gui The {@link SGMenu} that is open.
      * @param player The player viewing the menu.
      */
@@ -24,6 +23,7 @@ public class SGOpenMenu {
 
     /**
      * Get the open {@link SGMenu} instance.
+     *
      * @return The menu that is open.
      */
     public SGMenu getMenu() {
@@ -32,10 +32,10 @@ public class SGOpenMenu {
 
     /**
      * Get the player viewing the {@link SGMenu}.
+     *
      * @return The player viewing the menu.
      */
     public Player getPlayer() {
         return this.player;
     }
-
 }

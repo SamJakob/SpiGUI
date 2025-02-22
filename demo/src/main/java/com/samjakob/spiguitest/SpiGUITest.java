@@ -1,9 +1,11 @@
 package com.samjakob.spiguitest;
 
-import com.samjakob.spigui.menu.SGMenu;
-import com.samjakob.spigui.SpiGUI;
-import com.samjakob.spigui.buttons.SGButton;
-import com.samjakob.spigui.item.ItemBuilder;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.IntStream;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -15,25 +17,23 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.IntStream;
+import com.samjakob.spigui.SpiGUI;
+import com.samjakob.spigui.buttons.SGButton;
+import com.samjakob.spigui.item.ItemBuilder;
+import com.samjakob.spigui.menu.SGMenu;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * SpiGUITest
  *
- * <p>
- * Simple test plugin to showcase some of the functionality of SpiGUI.
- * You can build this from the main repository with the 'testJar' Gradle task.
- * </p>
+ * <p>Simple test plugin to showcase some of the functionality of SpiGUI.
  *
  * @author SamJakob
- * @version 1.3.0
+ * @version 2.0.0
  */
+@SuppressWarnings("deprecation")
 public class SpiGUITest extends JavaPlugin {
 
     /*
@@ -41,17 +41,16 @@ public class SpiGUITest extends JavaPlugin {
     showcase and test some of the functionality of SpiGUI.
     */
 
+    /** The SpiGUI instance for the {@link SpiGUITest} plugin. */
     private static SpiGUI spiGUI;
 
     // Start: variables for demonstration purposes.
+    /** Fake "gem" count per-player. */
     private final Map<Player, Integer> gems = new HashMap<>();
     // End: variables for demonstration purposes.
 
-    /**
-     * Default constructor.
-     */
-    public SpiGUITest() {
-    }
+    /** Default constructor. */
+    public SpiGUITest() {}
 
     @Override
     public void onEnable() {
@@ -59,7 +58,11 @@ public class SpiGUITest extends JavaPlugin {
     }
 
     @Override
-    public boolean onCommand(@NotNull final CommandSender sender, final Command command, @NotNull final String label, @NotNull final String[] args) {
+    public boolean onCommand(
+            @NotNull final CommandSender sender,
+            final Command command,
+            @NotNull final String label,
+            @NotNull final String[] args) {
         if (command.getLabel().equalsIgnoreCase("spigui")) {
 
             if (!(sender instanceof Player player)) {
@@ -77,21 +80,20 @@ public class SpiGUITest extends JavaPlugin {
 
                 myAwesomeMenu.setToolbarBuilder((slot, page, defaultType, menu) -> {
                     if (slot == 8) {
-                        return new SGButton(
-                            ItemBuilder.create(Material.EMERALD)
-                                .name(String.format("&a&l%d gems", gems.getOrDefault(player, 5)))
-                                .lore(
-                                    "&aUse gems to buy cosmetics",
-                                    "&aand other items in the store!",
-                                    "",
-                                    "&7&o(Click to add more)"
-                                )
-                                .build()
-                        ).withListener((event) -> {
-                            gems.put(player, gems.getOrDefault(player, 5) + 5);
-                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a&l&oSUCCESS!  &aYou have been given &25 &agems!"));
-                            menu.refreshInventory(event.getWhoClicked());
-                        });
+                        return new SGButton(ItemBuilder.create(Material.EMERALD)
+                                        .name(String.format("&a&l%d gems", gems.getOrDefault(player, 5)))
+                                        .lore(
+                                                "&aUse gems to buy cosmetics",
+                                                "&aand other items in the store!",
+                                                "",
+                                                "&7&o(Click to add more)")
+                                        .build())
+                                .withListener((event) -> {
+                                    gems.put(player, gems.getOrDefault(player, 5) + 5);
+                                    player.sendMessage(ChatColor.translateAlternateColorCodes(
+                                            '&', "&a&l&oSUCCESS!  &aYou have been given &25 &agems!"));
+                                    menu.refreshInventory(event.getWhoClicked());
+                                });
                     }
 
                     // Fallback to rendering the default button for a slot.
@@ -116,105 +118,115 @@ public class SpiGUITest extends JavaPlugin {
                      */
                 });
 
-                myAwesomeMenu.setButton(0, 10, new SGButton(
-                        ItemBuilder.create(Material.LEGACY_SKULL_ITEM)
+                myAwesomeMenu.setButton(
+                        0,
+                        10,
+                        new SGButton(ItemBuilder.create(Material.LEGACY_SKULL_ITEM)
                                 .skullOwner(player.getName())
                                 .name("&e&l" + player.getDisplayName())
                                 .lore(
                                         "&eGame Mode: &6" + player.getGameMode(),
-                                        "&eLocation: &6" + String.format(
-                                                "%.0f, %.0f, %.0f",
-                                                player.getLocation().getX(),
-                                                player.getLocation().getY(),
-                                                player.getLocation().getZ()
-                                        ),
-                                        "&eExperience: &6" + player.getTotalExperience()
-                                )
-                                .build()
-                ));
+                                        "&eLocation: &6"
+                                                + String.format(
+                                                        "%.0f, %.0f, %.0f",
+                                                        player.getLocation().getX(),
+                                                        player.getLocation().getY(),
+                                                        player.getLocation().getZ()),
+                                        "&eExperience: &6" + player.getTotalExperience())
+                                .build()));
 
-                myAwesomeMenu.setButton(1, 0, new SGButton(
-                        ItemBuilder.create(Material.GOLD_ORE)
-                                .name("&6Get rich quick!")
-                                .build()
-                ).withListener(event -> {
-                    Inventory playerInventory = event.getWhoClicked().getInventory();
+                myAwesomeMenu.setButton(
+                        1,
+                        0,
+                        new SGButton(ItemBuilder.create(Material.GOLD_ORE)
+                                        .name("&6Get rich quick!")
+                                        .build())
+                                .withListener(event -> {
+                                    Inventory playerInventory =
+                                            event.getWhoClicked().getInventory();
 
-                    IntStream.range(0, 9).forEach(hotBarSlot -> playerInventory.setItem(
-                            hotBarSlot, ItemBuilder.create(
-                                    event.getCurrentItem().getType() == Material.GOLD_ORE
-                                            ? Material.GOLD_BLOCK
-                                            : event.getCurrentItem().getType()
-                            ).amount(64).build()
-                    ));
+                                    IntStream.range(0, 9)
+                                            .forEach(hotBarSlot -> playerInventory.setItem(
+                                                    hotBarSlot,
+                                                    ItemBuilder.create(
+                                                                    event.getCurrentItem()
+                                                                                            .getType()
+                                                                                    == Material.GOLD_ORE
+                                                                            ? Material.GOLD_BLOCK
+                                                                            : event.getCurrentItem()
+                                                                                    .getType())
+                                                            .amount(64)
+                                                            .build()));
 
-                    event.getWhoClicked().sendMessage(
-                            ChatColor.translateAlternateColorCodes('&',
-                                    event.getCurrentItem().getType() == Material.GOLD_ORE
-                                            ? "&e&lYou are now rich!"
-                                            : "&7&lYou are now poor."
-                            )
-                    );
+                                    event.getWhoClicked()
+                                            .sendMessage(ChatColor.translateAlternateColorCodes(
+                                                    '&',
+                                                    event.getCurrentItem().getType() == Material.GOLD_ORE
+                                                            ? "&e&lYou are now rich!"
+                                                            : "&7&lYou are now poor."));
 
-                    Material newMaterial = event.getCurrentItem().getType() == Material.GOLD_ORE
-                            ? Material.DIRT
-                            : Material.GOLD_ORE;
+                                    Material newMaterial =
+                                            event.getCurrentItem().getType() == Material.GOLD_ORE
+                                                    ? Material.DIRT
+                                                    : Material.GOLD_ORE;
 
-                    myAwesomeMenu.getButton(1, 0).setIcon(
-                            ItemBuilder.create(newMaterial).name(
-                                    newMaterial == Material.GOLD_ORE ? "&6Get rich quick!" : "&7Get poor quick!"
-                            ).amount(1).build()
-                    );
+                                    myAwesomeMenu
+                                            .getButton(1, 0)
+                                            .setIcon(ItemBuilder.create(newMaterial)
+                                                    .name(
+                                                            newMaterial == Material.GOLD_ORE
+                                                                    ? "&6Get rich quick!"
+                                                                    : "&7Get poor quick!")
+                                                    .amount(1)
+                                                    .build());
 
-                    myAwesomeMenu.refreshInventory(event.getWhoClicked());
-                    ((Player) event.getWhoClicked()).updateInventory();
-                }));
+                                    myAwesomeMenu.refreshInventory(event.getWhoClicked());
+                                    ((Player) event.getWhoClicked()).updateInventory();
+                                }));
 
                 AtomicReference<BukkitTask> borderRunnable = new AtomicReference<>();
 
                 myAwesomeMenu.setOnPageChange(inventory -> {
                     if (inventory.getCurrentPage() != 0) {
                         if (borderRunnable.get() != null) borderRunnable.get().cancel();
-                    } else borderRunnable.set(
-                            inventory.getCurrentPage() != 0
-                                    ? null
-                                    : new BukkitRunnable(){
+                    } else
+                        borderRunnable.set(
+                                inventory.getCurrentPage() != 0
+                                        ? null
+                                        : new BukkitRunnable() {
 
-                                private final int[] TILES_TO_UPDATE = {
-                                        // @formatter:off
-                                        0,  1,  2,  3,  4,  5,  6,  7,  8,
-                                        9,                             17,
-                                        18, 19, 20, 21, 22, 23, 24, 25, 26
-                                        // @formatter:on
-                                };
+                                            private final int[] TILES_TO_UPDATE = {
+                                                // @spotless:off
+                                                0,  1,  2,  3,  4,  5,  6,  7,  8,
+                                                9,                             17,
+                                                18, 19, 20, 21, 22, 23, 24, 25, 26
+                                                // @spotless:on
+                                            };
 
-                                private short currentColor = 1;
+                                            private short currentColor = 1;
 
-                                @Override
-                                public void run() {
+                                            @Override
+                                            public void run() {
 
-                                    IntStream.range(0, TILES_TO_UPDATE.length).map(i -> TILES_TO_UPDATE.length - i + -1).forEach(
-                                            index -> myAwesomeMenu.setButton(TILES_TO_UPDATE[index], nextColorButton())
-                                    );
+                                                IntStream.range(0, TILES_TO_UPDATE.length)
+                                                        .map(i -> TILES_TO_UPDATE.length - i + -1)
+                                                        .forEach(index -> myAwesomeMenu.setButton(
+                                                                TILES_TO_UPDATE[index], nextColorButton()));
 
-                                    currentColor++;
-                                    if (currentColor >= 15) currentColor = 0;
+                                                currentColor++;
+                                                if (currentColor >= 15) currentColor = 0;
 
-                                    myAwesomeMenu.refreshInventory(player);
+                                                myAwesomeMenu.refreshInventory(player);
+                                            }
 
-                                }
-
-                                private SGButton nextColorButton() {
-                                    return new SGButton(
-                                            ItemBuilder.create(Material.LEGACY_STAINED_GLASS_PANE)
-                                                    .name("&" + Integer.toHexString(currentColor) + "&lSpiGUI!!!")
-                                                    .data(currentColor)
-                                                    .build()
-                                    );
-                                }
-
-                            }.runTaskTimer(this, 0L, 20L)
-                    );
+                                            private SGButton nextColorButton() {
+                                                return new SGButton(ItemBuilder.create(
+                                                                Material.LEGACY_STAINED_GLASS_PANE)
+                                                        .name("&" + Integer.toHexString(currentColor) + "&lSpiGUI!!!")
+                                                        .data(currentColor)
+                                                        .build());
+                                            }
+                                        }.runTaskTimer(this, 0L, 20L));
                 });
 
                 myAwesomeMenu.setOnClose(inventory -> {
@@ -236,14 +248,16 @@ public class SpiGUITest extends JavaPlugin {
                     int size;
 
                     if (args.length == 1) {
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l&oERROR  &cYou must specify an item count as an integer."));
+                        player.sendMessage(ChatColor.translateAlternateColorCodes(
+                                '&', "&c&l&oERROR  &cYou must specify an item count as an integer."));
                         return true;
                     }
 
                     try {
                         size = Integer.parseInt(args[1]);
                     } catch (NumberFormatException ex) {
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l&oERROR  &cThe item count must be a valid integer."));
+                        player.sendMessage(ChatColor.translateAlternateColorCodes(
+                                '&', "&c&l&oERROR  &cThe item count must be a valid integer."));
                         return true;
                     }
 
@@ -251,74 +265,95 @@ public class SpiGUITest extends JavaPlugin {
                     // multiple of 9, then the remainder can just be added to ensure the number of items match up).
                     SGMenu inventorySizeTest = SpiGUITest.getSpiGUI().create("Test Menu", 1);
 
-                    IntStream.range(0, size).forEach(i -> inventorySizeTest.addButton(new SGButton(
-                            ItemBuilder.create(Material.GOLD_ORE).name(String.format("&6Item %d", i + 1))
-                                    .build()
-                    )));
+                    IntStream.range(0, size)
+                            .forEach(i -> inventorySizeTest.addButton(new SGButton(ItemBuilder.create(Material.GOLD_ORE)
+                                    .name(String.format("&6Item %d", i + 1))
+                                    .build())));
 
                     player.openInventory(inventorySizeTest.getInventory());
                     return true;
                 }
 
                 case "refreshTest": {
-
                     SGMenu refreshTestMenu = SpiGUITest.getSpiGUI().create("&bMatches", 1);
 
                     // Generate 3 to 8 random matches.
-                    List<Match> matches = IntStream.range(0, ThreadLocalRandom.current().nextInt(5) + 3)
+                    List<Match> matches = IntStream.range(
+                                    0, ThreadLocalRandom.current().nextInt(5) + 3)
                             .mapToObj((i) -> Match.generateFakeMatch(true))
                             .toList();
 
                     for (int i = 0; i < matches.size(); i++) {
                         Match match = matches.get(i);
 
-                        refreshTestMenu.setButton(i, new SGButton(ItemBuilder.from(match.getKit().icon())
-                                .name(match.getKit().name())
-                                .lore(
-                                    String.format("&a%s &evs. &a%s", match.getPlayerNames()[0], match.getPlayerNames()[1]),
-                                    String.format("&fTime: &b%s", match.getTime()),
-                                    "",
-                                    String.format("&fKit: &b%s", match.getKit().name()),
-                                    String.format("&fArena: &b%s &7(%s)", match.getArena(), match.getKit().name())
-                                )
-                                .build()));
+                        refreshTestMenu.setButton(
+                                i,
+                                new SGButton(ItemBuilder.from(match.getKit().icon())
+                                        .name(match.getKit().name())
+                                        .lore(
+                                                String.format(
+                                                        "&a%s &evs. &a%s",
+                                                        match.getPlayerNames()[0], match.getPlayerNames()[1]),
+                                                String.format("&fTime: &b%s", match.getTime()),
+                                                "",
+                                                String.format(
+                                                        "&fKit: &b%s",
+                                                        match.getKit().name()),
+                                                String.format(
+                                                        "&fArena: &b%s &7(%s)",
+                                                        match.getArena(),
+                                                        match.getKit().name()))
+                                        .build()));
                     }
 
                     // Start a refresh task for the menu.
-                    AtomicReference<BukkitTask> refreshMatchesTask = new AtomicReference<>(new BukkitRunnable(){
-                        @Override
-                        public void run() {
-                            for (int i = 0; i < matches.size(); i++) {
-                                Match match = matches.get(i);
+                    AtomicReference<BukkitTask> refreshMatchesTask = new AtomicReference<>(
+                            new BukkitRunnable() {
+                                @Override
+                                public void run() {
+                                    for (int i = 0; i < matches.size(); i++) {
+                                        Match match = matches.get(i);
 
-                                refreshTestMenu.setButton(i, new SGButton(ItemBuilder.from(match.getKit().icon())
-                                        .flag(ItemFlag.HIDE_ATTRIBUTES)
-                                        .flag(ItemFlag.HIDE_DESTROYS)
-                                        .flag(ItemFlag.HIDE_PLACED_ON)
-                                        .flag(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
-                                        .name(match.getKit().name())
-                                        .lore(
-                                                String.format("&a%s &evs. &a%s", match.getPlayerNames()[0], match.getPlayerNames()[1]),
-                                                String.format("&fTime: &b%s", match.getTime()),
-                                                "",
-                                                String.format("&fKit: &b%s", match.getKit().name()),
-                                                String.format("&fArena: &b%s &7(%s)", match.getArena(), match.getKit().name())
-                                        )
-                                        .build()));
-                            }
+                                        refreshTestMenu.setButton(
+                                                i,
+                                                new SGButton(ItemBuilder.from(
+                                                                match.getKit().icon())
+                                                        .flag(ItemFlag.HIDE_ATTRIBUTES)
+                                                        .flag(ItemFlag.HIDE_DESTROYS)
+                                                        .flag(ItemFlag.HIDE_PLACED_ON)
+                                                        .flag(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
+                                                        .name(match.getKit().name())
+                                                        .lore(
+                                                                String.format(
+                                                                        "&a%s &evs. &a%s",
+                                                                        match.getPlayerNames()[0],
+                                                                        match.getPlayerNames()[1]),
+                                                                String.format("&fTime: &b%s", match.getTime()),
+                                                                "",
+                                                                String.format(
+                                                                        "&fKit: &b%s",
+                                                                        match.getKit()
+                                                                                .name()),
+                                                                String.format(
+                                                                        "&fArena: &b%s &7(%s)",
+                                                                        match.getArena(),
+                                                                        match.getKit()
+                                                                                .name()))
+                                                        .build()));
+                                    }
 
-                            refreshTestMenu.refreshInventory(player);
-                        }
-                    }.runTaskTimer(this, 0L, 20L));
+                                    refreshTestMenu.refreshInventory(player);
+                                }
+                            }.runTaskTimer(this, 0L, 20L));
 
                     // Cancel the refresh task when the inventory is closed.
                     refreshTestMenu.setOnClose(menu -> {
-                        if (refreshMatchesTask.get() != null) refreshMatchesTask.get().cancel();
+                        if (refreshMatchesTask.get() != null)
+                            refreshMatchesTask.get().cancel();
                     });
 
                     player.openInventory(refreshTestMenu.getInventory());
                     return true;
-
                 }
             }
 
@@ -328,17 +363,29 @@ public class SpiGUITest extends JavaPlugin {
         return false;
     }
 
+    /**
+     * Get the {@link SpiGUI} instance for {@link SpiGUITest}.
+     *
+     * @return the {@link SpiGUI} instance to be used by the plugin to show GUIs.
+     */
     public static SpiGUI getSpiGUI() {
         return spiGUI;
     }
 
     // The following is mock classes/data for the above test GUIs.
 
-    private record Kit(String name, ItemStack icon) {
-    }
+    /**
+     * Mock player kit.
+     *
+     * @param name of the kit.
+     * @param icon to display for the kit.
+     */
+    private record Kit(String name, ItemStack icon) {}
 
+    /** Mock match. */
     private static class Match {
 
+        /** Tracks the state of a {@link Match}. */
         private enum MatchState {
             /** Waiting to start. */
             WAITING,
@@ -349,13 +396,46 @@ public class SpiGUITest extends JavaPlugin {
         }
 
         // Begin mock data.
-        private static final String[] fakePlayerNames = {"MoreHaro", "Pixelle", "SpyPlenty", "Winlink", "Herobrine", "Notch", "Dinnerbone", "CinnamonTown", "TreeMushrooms"};
-        private static final Kit[] fakeKits = {
-            new Kit("Classic Battle", ItemBuilder.create(Material.STONE_SWORD).name("&7Classic Battle").build()),
-            new Kit("OP Battle", ItemBuilder.create(Material.DIAMOND_SWORD).name("&bOP Battle").build()),
-            new Kit("Classic UHC", ItemBuilder.create(Material.GOLDEN_APPLE).name("&eClassic UHC").build()),
-            new Kit("OP UHC", ItemBuilder.create(Material.GOLDEN_APPLE).data((short) 1).name("&6OP UHC").build()),
+
+        /** Fake player names to show. */
+        private static final String[] fakePlayerNames = {
+            "MoreHaro",
+            "Pixelle",
+            "SpyPlenty",
+            "Winlink",
+            "Herobrine",
+            "Notch",
+            "Dinnerbone",
+            "CinnamonTown",
+            "TreeMushrooms"
         };
+
+        /** Fake kits to show. */
+        private static final Kit[] fakeKits = {
+            new Kit(
+                    "Classic Battle",
+                    ItemBuilder.create(Material.STONE_SWORD)
+                            .name("&7Classic Battle")
+                            .build()),
+            new Kit(
+                    "OP Battle",
+                    ItemBuilder.create(Material.DIAMOND_SWORD)
+                            .name("&bOP Battle")
+                            .build()),
+            new Kit(
+                    "Classic UHC",
+                    ItemBuilder.create(Material.GOLDEN_APPLE)
+                            .name("&eClassic UHC")
+                            .build()),
+            new Kit(
+                    "OP UHC",
+                    ItemBuilder.create(Material.GOLDEN_APPLE)
+                            .data((short) 1)
+                            .name("&6OP UHC")
+                            .build()),
+        };
+
+        /** Fake arena names to show. */
         private static final String[] fakeArenas = {"King's Road", "Ilios", "Fort Starr", "The Hopper"};
 
         /**
@@ -363,8 +443,16 @@ public class SpiGUITest extends JavaPlugin {
          *
          * @return the generated fake match.
          */
-        public static Match generateFakeMatch() { return generateFakeMatch(false); }
+        public static Match generateFakeMatch() {
+            return generateFakeMatch(false);
+        }
 
+        /**
+         * Generate a fake match with a fake start time if {@code alreadyStarted} is true.
+         *
+         * @param alreadyStarted indicates that a fake start time should be generated.
+         * @return the generated fake match.
+         */
         public static Match generateFakeMatch(boolean alreadyStarted) {
             // Ensure unique values are generated for player1 and player2.
             int player1 = ThreadLocalRandom.current().nextInt(fakePlayerNames.length);
@@ -374,15 +462,14 @@ public class SpiGUITest extends JavaPlugin {
             } while (player2 == player1);
 
             Match fakeMatch = new Match(
-                new String[]{fakePlayerNames[player1], fakePlayerNames[player2]},
-                fakeKits[ThreadLocalRandom.current().nextInt(fakeKits.length)],
-                fakeArenas[ThreadLocalRandom.current().nextInt(fakeArenas.length)]
-            );
+                    new String[] {fakePlayerNames[player1], fakePlayerNames[player2]},
+                    fakeKits[ThreadLocalRandom.current().nextInt(fakeKits.length)],
+                    fakeArenas[ThreadLocalRandom.current().nextInt(fakeArenas.length)]);
 
             if (alreadyStarted) {
                 // If alreadyStarted specified to true, then generate a match with current time minus up to 5 minutes.
-                fakeMatch.matchStartTime = System.currentTimeMillis()
-                        - ThreadLocalRandom.current().nextLong(5 * 60000);
+                fakeMatch.matchStartTime =
+                        System.currentTimeMillis() - ThreadLocalRandom.current().nextLong(5 * 60000);
             }
 
             return fakeMatch;
@@ -392,7 +479,14 @@ public class SpiGUITest extends JavaPlugin {
         /** List of players in match. Two players implies a duel. */
         private final String[] playerNames;
 
-        public String[] getPlayerNames() { return playerNames; }
+        /**
+         * Get the list of player names for each player involved in the match.
+         *
+         * @return the array of names for players in the match.
+         */
+        public String[] getPlayerNames() {
+            return playerNames;
+        }
 
         /** Match start time in UNIX milliseconds. */
         private Long matchStartTime;
@@ -403,16 +497,36 @@ public class SpiGUITest extends JavaPlugin {
         /** Name of the kit used for the duel. */
         private final Kit kit;
 
-        public Kit getKit() { return kit; }
+        /**
+         * The kit information that is given to players in the match.
+         *
+         * @return the kit for the match.
+         */
+        public Kit getKit() {
+            return kit;
+        }
 
         /** Name of the arena used for the duel. */
         private final String arena;
 
-        public String getArena() { return arena; }
+        /**
+         * The arena for the match.
+         *
+         * @return the name of the arena.
+         */
+        public String getArena() {
+            return arena;
+        }
 
+        /**
+         * Get the duration of the match.
+         *
+         * @return status text or a live time to display for the match's status.
+         */
         public String getTime() {
             switch (getState()) {
-                case WAITING: return "Waiting...";
+                case WAITING:
+                    return "Waiting...";
                 case ONGOING:
                 case ENDED: {
                     long duration = (matchEndTime != null ? matchEndTime : System.currentTimeMillis()) - matchStartTime;
@@ -426,28 +540,40 @@ public class SpiGUITest extends JavaPlugin {
             return "ERROR";
         }
 
+        /**
+         * Construct a match with given values.
+         *
+         * @param playerNames involved in the match.
+         * @param kit given to each player in the match.
+         * @param arena that the match will take place in.
+         */
         public Match(String[] playerNames, Kit kit, String arena) {
             this.playerNames = playerNames;
             this.kit = kit;
             this.arena = arena;
         }
 
+        /** Start the match (record the start time). */
         public void start() {
             if (this.matchStartTime != null) throw new IllegalStateException("Match already started!");
             this.matchStartTime = System.currentTimeMillis();
         }
 
+        /** Stop the match (record the end time). */
         public void stop() {
             if (this.matchEndTime != null) throw new IllegalStateException("Match already finished!");
             this.matchEndTime = System.currentTimeMillis();
         }
 
+        /**
+         * Get the status of the match.
+         *
+         * @return the {@link MatchState} for the match.
+         */
         public MatchState getState() {
             if (this.matchStartTime == null) return MatchState.WAITING;
             else if (this.matchEndTime == null) return MatchState.ONGOING;
             return MatchState.ENDED;
         }
-
     }
-
 }

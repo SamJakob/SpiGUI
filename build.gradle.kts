@@ -96,11 +96,11 @@ spotless {
     java {
         target(allprojects.map { it.sourceSets.main.get().allJava })
 
+        toggleOffOn()
         palantirJavaFormat().formatJavadoc(true)
 
         importOrder("java|javax", "org.bukkit", "com.samjakob.spigui", "")
         removeUnusedImports()
-
         formatAnnotations()
     }
 }
