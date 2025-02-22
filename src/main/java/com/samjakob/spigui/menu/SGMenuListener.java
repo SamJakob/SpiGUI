@@ -185,7 +185,7 @@ public class SGMenuListener implements Listener {
     public void onAdjacentInventoryClick(InventoryClickEvent event) {
         // If the clicked inventory is not adjacent to a SpiGUI menu, ignore
         // the click event.
-        if (event.getView().getTopInventory() == null ||
+        if (event.getView().getTopInventory().isEmpty() ||
                 shouldIgnoreInventoryEvent(event.getView().getTopInventory())) return;
 
         // If the clicked inventory is the SpiGUI menu (the top inventory),
@@ -193,7 +193,10 @@ public class SGMenuListener implements Listener {
         if (event.getClickedInventory() == event.getView().getTopInventory()) return;
 
         // Get the instance of the SpiGUI that was clicked.
-        SGMenu clickedGui = (SGMenu) event.getClickedInventory().getHolder();
+        SGMenu clickedGui = (SGMenu) event.getView().getTopInventory().getHolder();
+
+        if(clickedGui == null)
+            return;
 
         // If the clicked inventory is not a SpiGUI menu, block the event if
         // it is one of the blocked actions.

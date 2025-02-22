@@ -10,8 +10,8 @@ version = '1.4.0'
 project.uri "https://github.com/SamJakob/SpiGUI"
 
 java {
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    sourceCompatibility = 21
+    targetCompatibility = 21
 
     withJavadocJar()
     withSourcesJar()
@@ -33,8 +33,8 @@ repositories {
 
 dependencies {
     // Spigot API
-    compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.8.8-R0.1-SNAPSHOT'
-    testCompileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.8.8-R0.1-SNAPSHOT'
+    compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.21.1-R0.1-SNAPSHOT'
+    testCompileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.21.1-R0.1-SNAPSHOT'
 }
 
 // Builds Spigot runnable plugin from the test package.
