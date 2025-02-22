@@ -49,11 +49,13 @@ tasks.register('testJar', Jar) {
     archiveBaseName.set("SpiGUITest")
 }
 
+def hasSonatypeCredentials = project.hasProperty("ossrhUsername") && project.hasProperty("ossrhPassword")
+
 publishing {
     publications {
         SpiGUI(MavenPublication) {
             from components.java
-            
+
             pom {
                 name = "SpiGUI"
                 description = "A comprehensive GUI API for Spigot with pages support."
@@ -85,7 +87,7 @@ publishing {
         }
     }
 
-    if (project.hasProperty("ossrhUsername") && project.hasProperty("ossrhPassword")) {
+    if (hasSonatypeCredentials) {
         repositories {
             maven {
                 url = version.endsWith('SNAPSHOT')
@@ -104,9 +106,11 @@ publishing {
     }
 }
 
-signing {
-    useGpgCmd()
-    sign publishing.publications.SpiGUI
+if (hasSonatypeCredentials) {
+    signing {
+        useGpgCmd()
+        sign publishing.publications.SpiGUI
+    }
 }
 
 javadoc {
