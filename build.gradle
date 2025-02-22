@@ -4,9 +4,10 @@ plugins {
     id 'signing'
 }
 
-group 'com.samjakob'
-version '1.4.0'
-uri "https://github.com/SamJakob/SpiGUI"
+group = 'com.samjakob'
+version = '1.4.0'
+
+project.uri "https://github.com/SamJakob/SpiGUI"
 
 java {
     sourceCompatibility = 1.8
@@ -21,12 +22,12 @@ repositories {
 
     maven {
         // Sonatype (for bungeecord-chat used by Spigot)
-        url "https://oss.sonatype.org/content/repositories/snapshots/"
+        url = "https://oss.sonatype.org/content/repositories/snapshots/"
     }
 
     maven {
         // Spigot Nexus
-        url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+        url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
     }
 }
 
@@ -51,6 +52,8 @@ tasks.register('testJar', Jar) {
 publishing {
     publications {
         SpiGUI(MavenPublication) {
+            from components.java
+            
             pom {
                 name = "SpiGUI"
                 description = "A comprehensive GUI API for Spigot with pages support."
@@ -79,23 +82,23 @@ publishing {
                     url = 'https://github.com/SamJakob/SpiGUI'
                 }
             }
-
-            from components.java
         }
     }
 
-    repositories {
-        maven {
-            url = version.endsWith('SNAPSHOT')
-                    // If the version ends with SNAPSHOT, we're building a snapshot
-                    // so deploy to a SNAPSHOT repository.
-                    ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
-                    // Otherwise, deploy to a staging repository.
-                    : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+    if (project.hasProperty("ossrhUsername") && project.hasProperty("ossrhPassword")) {
+        repositories {
+            maven {
+                url = version.endsWith('SNAPSHOT')
+                        // If the version ends with SNAPSHOT, we're building a snapshot
+                        // so deploy to a SNAPSHOT repository.
+                        ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+                        // Otherwise, deploy to a staging repository.
+                        : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
 
-            credentials {
-                username = ossrhUsername
-                password = ossrhPassword
+                credentials {
+                    username = ossrhUsername
+                    password = ossrhPassword
+                }
             }
         }
     }
