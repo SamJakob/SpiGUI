@@ -174,9 +174,10 @@ public class SpiGUI {
     }
 
     /**
-     * @see SpiGUI#blockDefaultInteractions
+     * Whether default inventory interactions should be cancelled.
      *
      * @param blockDefaultInteractions Whether default inventory interactions should be cancelled.
+     * @see SpiGUI#blockDefaultInteractions
      */
     public void setBlockDefaultInteractions(boolean blockDefaultInteractions) {
         this.blockDefaultInteractions = blockDefaultInteractions;
@@ -192,9 +193,10 @@ public class SpiGUI {
     }
 
     /**
-     * @see SpiGUI#enableAutomaticPagination
+     * Whether automatic pagination should be enabled.
      *
      * @param enableAutomaticPagination Whether automatic pagination should be enabled.
+     * @see SpiGUI#enableAutomaticPagination
      */
     public void setEnableAutomaticPagination(boolean enableAutomaticPagination) {
         this.enableAutomaticPagination = enableAutomaticPagination;
@@ -210,18 +212,20 @@ public class SpiGUI {
     }
 
     /**
-     * @see SpiGUI#defaultToolbarBuilder
+     * The default toolbar builder used for GUIs.
      *
      * @param defaultToolbarBuilder The default toolbar builder used for GUIs.
+     * @see SpiGUI#defaultToolbarBuilder
      */
     public void setDefaultToolbarBuilder(SGToolbarBuilder defaultToolbarBuilder) {
         this.defaultToolbarBuilder = defaultToolbarBuilder;
     }
 
     /**
-     * @see SpiGUI#defaultToolbarBuilder
+     * The default toolbar builder used for GUIs.
      *
      * @return The default toolbar builder used for GUIs.
+     * @see SpiGUI#defaultToolbarBuilder
      */
     public SGToolbarBuilder getDefaultToolbarBuilder() {
         return defaultToolbarBuilder;

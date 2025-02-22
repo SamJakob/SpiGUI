@@ -18,6 +18,11 @@ import org.bukkit.event.Event;
  */
 public class SGDefaultToolbarBuilder implements SGToolbarBuilder {
 
+    /**
+     * Construct the default implementation of {@link SGToolbarBuilder}.
+     */
+    public SGDefaultToolbarBuilder() {}
+
     @Override
     public SGButton buildToolbarButton(int slot, int page, SGToolbarButtonType type, SGMenu menu) {
         switch (type) {

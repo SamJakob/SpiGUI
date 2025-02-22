@@ -129,6 +129,7 @@ public class SGMenu implements InventoryHolder {
      * @param name                       The name of the menu.
      * @param rowsPerPage                The number of rows per page in the menu.
      * @param tag                        The tag associated with this menu.
+     * @param clickTypes                 The set of permitted click types.
      */
     public SGMenu(JavaPlugin owner, SpiGUI spiGUI, String name, int rowsPerPage, String tag, ClickType... clickTypes) {
         this.owner = owner;
@@ -611,8 +612,10 @@ public class SGMenu implements InventoryHolder {
     /// EVENTS ///
 
     /**
-     * @see #setOnClose(Consumer)
+     * The action to be performed on close.
+     *
      * @return The action to be performed on close.
+     * @see #setOnClose(Consumer)
      */
     public Consumer<SGMenu> getOnClose() {
         return this.onClose;
@@ -630,8 +633,10 @@ public class SGMenu implements InventoryHolder {
     }
 
     /**
-     * @see #setOnPageChange(Consumer)
+     * The action to be performed on page change.
+     *
      * @return The action to be performed on page change.
+     * @see #setOnPageChange(Consumer)
      */
     public Consumer<SGMenu> getOnPageChange() {
         return this.onPageChange;
