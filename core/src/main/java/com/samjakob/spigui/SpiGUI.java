@@ -14,13 +14,18 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * The core class for the SpiGUI library.<br>
+ * The core class for the SpiGUI library.
+ *
+ * <p>
  * One instance of the SpiGUI class is registered for each plugin using it.
- * <br>
+ * </p>
+ *
+ * <p>
  * The expected usage of SpiGUI is that you register a SpiGUI instance for your
  * plugin with <code>new SpiGUI(this);</code> in your class that extends
  * <code>JavaPlugin</code>. You can then use the instance you've created throughout
  * your project to create GUIs that use SpiGUI.
+ * </p>
  */
 public final class SpiGUI {
 
@@ -29,55 +34,65 @@ public final class SpiGUI {
 
     /**
      * Whether to cancel inventory click actions by default.
-     * <br>
+     *
+     * <p>
      * This is typically set to true so events needn't be manually cancelled
      * every time an item is clicked in the inventory as that is the behavior
      * most typically used with an inventory GUI.
-     * <br>
+     * </p>
+     *
+     * <p>
      * With this set to true, you can of course use <code>event.setCancelled(false);</code>
      * (or <code>event.setResult(Event.Result.DEFAULT);</code>) in your button
      * listeners to allow the default behavior of the inventory to take place.
+     * </p>
      */
     private boolean blockDefaultInteractions = true;
 
     /**
      * Whether automatic pagination should be enabled.
-     * <br>
+     *
+     * <p>
      * This is set to true by default, and it means if you set an inventory slot
      * greater than the highest slot on the inventory, a row will automatically
      * be added containing pagination items that allow a user to scroll between
      * different 'pages' to access all the assigned slots in the inventory.
-     * <br>
+     * </p>
+     *
+     * <p>
      * This concept is based on an improved version of the approach taken with
      * my SpigotPaginatedGUI library.
+     * </p>
      */
     private boolean enableAutomaticPagination = true;
 
     /**
      * The defaultToolbarBuilder is the plugin-wide {@link SGToolbarBuilder}
      * called when building pagination buttons for inventory GUIs.
-     * <br>
+     *
+     * <p>
      * This can be overridden per-inventory, as well as per-plugin using the appropriate methods
      * on either the inventory class ({@link SGMenu}) or your plugin's instance of
      * {@link SpiGUI}.
+     * </p>
      */
     private SGToolbarBuilder defaultToolbarBuilder = new SGDefaultToolbarBuilder();
 
     /**
      * Creates an instance of the SpiGUI library associated with a given plugin.
-     * <br><br>
+     *
+     * <p>
      * This is intended to be stored as a static field in your plugin with a public static
      * getter (or a public static field - dealer's choice) and you create inventories through
      * this class by calling {@link #create(String, int)} on the static {@link SpiGUI} field.
-     * <br>
-     * A lengthy justification of this is provided below, should you care to read it.
+     * </p>
      *
-     * <br><br>
-     *
-     * <p><b>Note:</b></p>
+     * <h2>Design Notes</h2>
+     * <p>
      * The association with a plugin is an important design decision that was overlooked
      * in this library's predecessor, SpigotPaginatedGUI.
-     * <br><br>
+     * </p>
+     * <p>
      * This library is not designed to act as a standalone plugin because that is inconvenient
      * for both developers and server administrators for such a relatively insignificant task - the
      * library is more just a small convenience measure. However, this library still needs to register
@@ -86,15 +101,18 @@ public final class SpiGUI {
      * <code>PaginatedGUI.prepare</code> first, however this obviously causes problems if that
      * particular plugin is unloaded - as any other plugins using the library no longer have the
      * listener that was registered.
-     * <br><br>
+     * </p>
+     * <p>
      * This approach was therefore considered a viable compromise - each plugin registers its own
      * listener, however the downside of this is that each inventory and the listener must now
      * also be registered with the plugin too.
-     * <br><br>
+     * </p>
+     * <p>
      * Thus, the design whereby this class is registered as a static field on a {@link JavaPlugin}
      * instance and serves as a proxy for creating ({@link SGMenu}) inventories and an instance
      * of the {@link SGMenuListener} registered with that plugin seemed like a good way to try
      * and minimize the inconvenience of the approach.
+     * </p>
      *
      * @param plugin The plugin using SpiGUI.
      */
@@ -109,18 +127,20 @@ public final class SpiGUI {
     /**
      * An alias for {@link #create(String, int, String)} with the tag set to null.
      * Use this method if you don't need the tag, or you don't know what it's for.
-     * <br>
+     *
+     * <p>
      * The rows parameter is used in place of the size parameter of the
      * Bukkit/Spigot inventory API. So, if you wanted an inventory of size
      * 27, you would supply 3 as the value of the <code>rows</code> parameter.
+     * </p>
      *
-     * <br><br>
-     *
+     * <p>
      * The <code>name</code> parameter supports the following 'placeholders':
      * <ul>
      * <li><code>{currentPage}</code>: the current page the inventory is on.</li>
      * <li><code>{maxPage}</code>: the final page of the inventory.</li>
      * </ul>
+     * </p>
      *
      * @param name The display name of the inventory.
      * @param rows The number of rows the inventory should have per page.
@@ -134,35 +154,33 @@ public final class SpiGUI {
      * Creates an inventory with a given name, tag and number of rows.
      * The display name is color code translated.
      *
-     * <br><br>
-     *
+     * <p>
      * The <code>name</code> parameter supports the following 'placeholders':
      * <ul>
      * <li><code>{currentPage}</code>: the current page the inventory is on.</li>
      * <li><code>{maxPage}</code>: the final page of the inventory.</li>
      * </ul>
+     * </p>
      *
-     * <br><br>
-     *
+     * <p>
      * The rows parameter is used in place of the size parameter of the
      * Bukkit/Spigot inventory API. So, if you wanted an inventory of size
      * 27, you would supply 3 as the value of the <code>rows</code> parameter.
+     * </p>
      *
-     * <br><br>
-     *
+     * <p>
      * The tag is used when getting all open inventories ({@link #findOpenWithTag(String)}) with your chosen tag.
      * An example of where this might be useful is with a permission GUI - when
      * the permissions are updated by one user in the GUI, it would be desirable to
      * refresh the state of the permissions GUI for all users observing the GUI.
+     * </p>
      *
-     * <br><br>
-     *
+     * <p>
      * You might give the permissions GUI a tag of 'myPermissionsGUI', then refreshing
      * all the open instances of the GUI would be as simple as getting all open inventories
      * with the aforementioned tag using {@link #findOpenWithTag(String)} and calling refresh
      * on each GUI in the list.
-     *
-     * <br><br>
+     * </p>
      *
      * @param name The display name of the inventory.
      * @param rows The number of rows the inventory should have per page.
@@ -234,11 +252,15 @@ public final class SpiGUI {
     /**
      * Finds a list of all open inventories with a given tag along with the
      * player who has that inventory open.
-     * <br>
+     *
+     * <p>
      * This returns a list of {@link SGOpenMenu} which simply stores the
      * opened inventory along with the player viewing the open inventory.
-     * <br>
+     * </p>
+     *
+     * <p>
      * Supplying null as the tag value will get all untagged inventories.
+     * </p>
      *
      * @param tag The tag to search for.
      * @return A list of {@link SGOpenMenu} whose inventories have the specified tag.

@@ -19,10 +19,12 @@ import java.util.Set;
 /**
  * The {@link SGMenuListener} handles SpiGUI events on behalf of a plugin that
  * uses SpiGUI.
- * <br>
+ *
+ * <p>
  * You must register this class as an event listener in your plugin's
  * <code>onEnable</code> method by initializing SpiGUI there and passing
  * your plugin instance to SpiGUI's constructor.
+ * </p>
  */
 public class SGMenuListener implements Listener {
 
@@ -46,11 +48,13 @@ public class SGMenuListener implements Listener {
      * Returns false if the specified inventory exists and is an SGMenu,
      * as that implies the inventory event should be handled by this
      * {@link SGMenuListener} class.
-     * <br>
+     *
+     * <p>
      * Alternatively, if the inventory is null, or the inventory is not
      * associated with the {@link SGMenu} class (i.e., <code>inventory.getHolder</code>
      * is null), this returns true signalling that the event should not
      * be processed.
+     * </p>
      *
      * @param inventory The inventory to check.
      * @return False if inventory event should be handled by {@link SGMenuListener}, true if not.
@@ -68,14 +72,18 @@ public class SGMenuListener implements Listener {
     /**
      * Allows a plugin to determine whether an inventory event will be
      * handled by SpiGUI.
-     * <br>
+     *
+     * <p>
      * You can use this to override SpiGUI's event handlers (in
      * {@link SGMenuListener}) with custom functionality, should you need
      * to.
-     * <br>
+     * </p>
+     *
+     * <p>
      * The plugin parameter refers to your plugin, the one using SpiGUI.
      * It needs to be passed in here so that SpiGUI can check whether
      * the {@link SGMenu} inventory belongs to your plugin.
+     * </p>
      *
      * @param plugin The {@link JavaPlugin} plugin instance.
      * @param inventory The inventory to check.
@@ -94,11 +102,13 @@ public class SGMenuListener implements Listener {
      * Overrides the click event for an SGMenu. This is automatically
      * registered into a plugin using SpiGUI when SpiGUI is initialized
      * in that plugin.
-     * <br>
+     *
+     * <p>
      * The respective inventory is first checked to ensure that it is a
      * SpiGUI {@link SGMenu} and, if it is, whether a pagination button
      * was clicked, finally (if not a pagination button) the event is
      * delegated to the inventory the click occurred in.
+     * </p>
      *
      * @param event The event to handle.
      * @see SpiGUI#SpiGUI(JavaPlugin)
@@ -209,17 +219,21 @@ public class SGMenuListener implements Listener {
      * Overrides the drag event for an SGMenu. This is automatically
      * registered into a plugin using SpiGUI when SpiGUI is initialized
      * in that plugin.
-     * <br>
+     *
+     * <p>
      * The respective inventory is first checked to ensure that it is a
      * SpiGUI {@link SGMenu} and, if it is, the drag event is captured
      * and cancelled.
-     * <br>
+     * </p>
+     *
+     * <p>
      * If this behavior is undesirable, it can be overridden by creating
      * an {@link InventoryDragEvent} handler of your own - which you can
      * do by registering an event handler and checking
      * {@link SGMenuListener#willHandleInventoryEvent(JavaPlugin, Inventory)}
      * returns true. You can identify the specific inventory with
      * {@link SGMenu#getTag()}.
+     * </p>
      *
      * @param event The event to handle.
      * @see SpiGUI#SpiGUI(JavaPlugin)
@@ -247,10 +261,12 @@ public class SGMenuListener implements Listener {
      * Overrides the close event for an SGMenu. This is automatically
      * registered into a plugin using SpiGUI when SpiGUI is initialized
      * in that plugin.
-     * <br>
+     *
+     * <p>
      * The respective inventory is first checked to ensure that it is a
      * SpiGUI {@link SGMenu} and, if it is, the close event is delegated
      * to a handler for that inventory, if one exists.
+     * </p>
      *
      * @param event The event to handle.
      * @see SpiGUI#SpiGUI(JavaPlugin)

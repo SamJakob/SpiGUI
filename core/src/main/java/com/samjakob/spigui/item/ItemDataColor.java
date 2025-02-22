@@ -5,11 +5,11 @@ package com.samjakob.spigui.item;
  * set using durability values which is understandable from an
  * efficiency perspective however it is rather unintuitive and the values
  * are not clear or memorable.
- * <br>
+ *
+ * <p>
  * This class allows those damage values to be referred to by the name
  * of the color they represent.
- * <br>
- * Note that
+ * </p>
  *
  * @author SamJakob
  * @version 2.0.0

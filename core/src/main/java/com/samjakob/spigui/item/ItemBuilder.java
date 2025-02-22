@@ -273,9 +273,13 @@ public interface ItemBuilder {
     /**
      * If the item has {@link SkullMeta} (i.e. if the item is a skull), this can
      * be used to set the skull's owner (i.e. the player the skull represents.)
-     * <br>
-     * This also sets the skull's data value to 3 for 'player head', as setting
-     * the skull's owner doesn't make much sense for the mob skulls.
+     *
+     * <p>
+     * In older versions of the game, this also sets the skull's data value to 3
+     * for 'player head', as setting the skull's owner doesn't make much sense for
+     * the mob skulls. (This is irrelevant in later versions as the skull owner
+     * can only be set on a PLAYER_HEAD item anyway).
+     * </p>
      *
      * @param name The name of the player the skull item should resemble.
      * @return The {@link ItemBuilder} instance.

@@ -5,10 +5,12 @@ import com.samjakob.spigui.buttons.SGButton;
 
 /**
  * An interface for a toolbar button builder.
- * <br>
+ *
+ * <p>
  * The toolbar button builder is responsible for rendering the toolbar buttons
  * for an {@link SGMenu}. This can be customized to render different pagination
  * items, etc., for a GUI.
+ * </p>
  */
 public interface SGToolbarBuilder {
 

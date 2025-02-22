@@ -5,13 +5,17 @@ import org.bukkit.inventory.ItemStack;
 /**
  * An SGButton represents a clickable item in an SGMenu (GUI).
  * It consists of an icon ({@link ItemStack}) and a listener ({@link SGButton}).
- * <br>
+ *
+ * <p>
  * When the icon is clicked in the SGMenu, the listener is called, thus allowing
  * for rudimentary menus to be built by displaying icons and overriding their behavior.
- * <br>
+ * </p>
+ *
+ * <p>
  * This somewhat resembles the point-and-click nature of Graphical User Interfaces (GUIs)
  * popularized by Operating Systems developed in the late 80s and 90s which is where the
  * name of the concept in Spigot plugins was derived.
+ * </p>
  */
 public class SGButton {
 
@@ -51,8 +55,11 @@ public class SGButton {
 
     /**
      * Returns the {@link SGButtonListener} that is to be executed when the button
-     * is clicked.<br>
-     * This is typically intended for use by the API.
+     * is clicked.
+     *
+     * <p>
+     * This is typically intended for internal use by the main {@link com.samjakob.spigui.SpiGUI} API.
+     * </p>
      *
      * @return The listener to be called when the button is clicked.
      */

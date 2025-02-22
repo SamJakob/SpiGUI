@@ -25,9 +25,11 @@ import java.util.stream.IntStream;
 
 /**
  * SpiGUITest
- * <br>
+ *
+ * <p>
  * Simple test plugin to showcase some of the functionality of SpiGUI.
  * You can build this from the main repository with the 'testJar' Gradle task.
+ * </p>
  *
  * @author SamJakob
  * @version 1.3.0
@@ -179,9 +181,11 @@ public class SpiGUITest extends JavaPlugin {
                                     : new BukkitRunnable(){
 
                                 private final int[] TILES_TO_UPDATE = {
+                                        // @formatter:off
                                         0,  1,  2,  3,  4,  5,  6,  7,  8,
                                         9,                             17,
                                         18, 19, 20, 21, 22, 23, 24, 25, 26
+                                        // @formatter:on
                                 };
 
                                 private short currentColor = 1;

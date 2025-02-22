@@ -9,12 +9,14 @@ import org.bukkit.event.Event;
 
 /**
  * The default implementation of {@link SGToolbarBuilder}.
- * <br>
+ *
+ * <p>
  * This class is used by default by SpiGUI, but you can override this class by
  * extending it and passing your custom implementation to
  * {@link SpiGUI#setDefaultToolbarBuilder(SGToolbarBuilder)}
  * (or to use it for a specific menu, pass it to
  * {@link SGMenu#setToolbarBuilder(SGToolbarBuilder)}).
+ * </p>
  */
 public class SGDefaultToolbarBuilder implements SGToolbarBuilder {
 

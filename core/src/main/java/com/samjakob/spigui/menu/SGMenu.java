@@ -18,19 +18,25 @@ import java.util.function.Consumer;
 
 /**
  * SGMenu is used to implement the library's GUIs.
- * <br><br>
+ *
+ * <p>
  * This is a Minecraft 'inventory' that contains items which can have
  * programmable actions performed when they are clicked. Additionally,
  * it automatically adds 'pagination' items if the menu overflows.
- * <br><br>
+ * </p>
+ *
+ * <p>
  * You do not instantiate this class when you need it - as you would
  * have done with the older version of the library - rather you make a
  * call to {@link SpiGUI#create(String, int)} or {@link SpiGUI#create(String, int, String)}
  * from your plugin's {@link SpiGUI} instance.
- * <br><br>
+ * </p>
+ *
+ * <p>
  * This creates an inventory that is already associated with your plugin.
  * The reason for this is explained in the {@link SpiGUI#SpiGUI(JavaPlugin)}
  * class constructor implementation notes.
+ * </p>
  */
 public class SGMenu implements InventoryHolder {
 
@@ -119,10 +125,17 @@ public class SGMenu implements InventoryHolder {
     };
 
     /**
-     * <b>Intended for internal use only. Use {@link SpiGUI#create(String, int)} or {@link SpiGUI#create(String, int, String)}!</b><br>
-     * Used by the library internally to construct an SGMenu.
-     * <br>
+     * <b>For internal use only</b>: you should probably use {@link SpiGUI#create(String, int)} or
+     * {@link SpiGUI#create(String, int, String)}!</b></p>
+     *
+     * <p>
+     * Used by the library internally to construct an SGMenu. This method is not considered part of the stable public
+     * API - if you use it you should be prepared to make changes to it when you update your SpiGUI version.
+     * </p>
+     *
+     * <p>
      * The name parameter is color code translated.
+     * </p>
      *
      * @param owner                      The JavaPlugin that owns this menu.
      * @param spiGUI                     The SpiGUI instance associated with this menu.
@@ -238,9 +251,11 @@ public class SGMenu implements InventoryHolder {
     /**
      * Returns the number of slots per page of the inventory. This would be
      * associated with the Bukkit/Spigot APIs inventory 'size' parameter.
-     * <br>
+     *
+     * <p>
      * So for example if {@link #getRowsPerPage()} was 3, this would be 27,
      * as Minecraft Chest inventories have rows of 9 columns.
+     * </p>
      *
      * @return The number of inventory slots per page.
      */
@@ -250,10 +265,12 @@ public class SGMenu implements InventoryHolder {
 
     /**
      * Sets the number of rows per page of the inventory.
-     * <br>
+     *
+     * <p>
      * There is no way to set the number of slots per page directly, so if
      * you need to do that, you'll need to divide the number of slots by 9
      * and supply the result to this parameter to achieve that.
+     * </p>
      *
      * @param rowsPerPage The number of rows per page.
      */
@@ -265,11 +282,13 @@ public class SGMenu implements InventoryHolder {
 
     /**
      * This returns the GUI's tag.
-     * <br><br>
+     *
+     * <p>
      * The tag is used when getting all open inventories ({@link SpiGUI#findOpenWithTag(String)}) with your chosen tag.
      * An example of where this might be useful is with a permission GUI - when
      * the permissions are updated by one user in the GUI, it would be desirable to
      * refresh the state of the permissions GUI for all users observing the GUI.
+     * </p>
      *
      * @return The GUI's tag.
      */
@@ -292,10 +311,12 @@ public class SGMenu implements InventoryHolder {
 
     /**
      * This sets the inventory's display name.
-     * <br><br>
+     *
+     * <p>
      * The name parameter is color code translated before the value is set.
      * If you want to avoid this behavior, you should use {@link #setRawName(String)}
      * which sets the inventory's name directly.
+     * </p>
      *
      * @param name The display name to set. (and to be color code translated)
      */
@@ -315,9 +336,11 @@ public class SGMenu implements InventoryHolder {
 
     /**
      * This returns the inventory's display name.
-     * <br><br>
+     *
+     * <p>
      * Note that if you used {@link #setName(String)}, this will have been
      * color code translated already.
+     * </p>
      *
      * @return The inventory's display name.
      */
@@ -356,10 +379,12 @@ public class SGMenu implements InventoryHolder {
     /**
      * Adds the provided {@link SGButton} at the position denoted by the
      * supplied slot parameter.
-     * <br>
+     *
+     * <p>
      * If you specify a value larger than the value of the first page,
      * pagination will be automatically applied when the inventory is
      * rendered. An alternative to this is to use {@link #setButton(int, int, SGButton)}.
+     * </p>
      *
      * @see #setButton(int, int, SGButton)
      * @param slot The desired location of the button.
@@ -372,13 +397,17 @@ public class SGMenu implements InventoryHolder {
     /**
      * Adds the provided {@link SGButton} at the position denoted by the
      * supplied slot parameter <i>on the page denoted by the supplied page parameter</i>.
-     * <br>
+     *
+     * <p>
      * This is an alias for {@link #setButton(int, SGButton)}, however one where the slot
      * value is mapped to the specified page. So if page is 2 (the third page) and the
      * inventory row count was 3 (so a size of 27), a supplied slot value of 3 would actually map to
      * a slot value of (2 * 27) + 3 = 54. The mathematical formula for this is <code>(page * pageSize) + slot</code>.
-     * <br>
+     * </p>
+     *
+     * <p>
      * If the slot value is out of the bounds of the specified page, this function will do nothing.
+     * </p>
      *
      * @see #setButton(int, SGButton)
      * @param page The page to which the button should be added.
@@ -404,8 +433,10 @@ public class SGMenu implements InventoryHolder {
     /**
      * An alias for {@link #removeButton(int)} to remove a button from the specified
      * slot on the specified page.
-     * <br>
+     *
+     * <p>
      * If the slot value is out of the bounds of the specified page, this function will do nothing.
+     * </p>
      *
      * @param page The page containing the button you wish to remove.
      * @param slot The slot, of that page, containing the button you wish to remove.
@@ -419,9 +450,11 @@ public class SGMenu implements InventoryHolder {
 
     /**
      * Returns the {@link SGButton} in the specified slot.
-     * <br>
+     *
+     * <p>
      * If you attempt to get a slot less than 0 or greater than the slot containing
      * the button at the greatest slot value, this will return null.
+     * </p>
      *
      * @param slot The slot containing the button you wish to get.
      * @return The {@link SGButton} that was in that slot or null if the slot was invalid or if there was no button that slot.
@@ -543,13 +576,17 @@ public class SGMenu implements InventoryHolder {
     /**
      * Marks a slot as 'sticky', so that when the page is changed,
      * the slot will always display the value on the first page.
-     * <br>
+     *
+     * <p>
      * This is useful for implementing things like 'toolbars', where
      * you have a set of common items on every page.
-     * <br>
+     * </p>
+     *
+     * <p>
      * If the slot is out of the bounds of the first page (i.e. less
      * than 0 or greater than {@link #getPageSize()} - 1) this method
      * will do nothing.
+     * </p>
      *
      * @param slot The slot to mark as 'sticky'.
      */
@@ -764,9 +801,11 @@ public class SGMenu implements InventoryHolder {
 
     /**
      * Refresh an inventory that is currently open for a given viewer.
-     * <br>
+     *
+     * <p>
      * This method checks if the specified viewer is looking at an
      * {@link SGMenu} and, if they are, it refreshes the inventory for them.
+     * </p>
      *
      * @param viewer The viewer of the open inventory.
      */
