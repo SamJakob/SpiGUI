@@ -22,7 +22,7 @@ import java.util.Objects;
  * <code>JavaPlugin</code>. You can then use the instance you've created throughout
  * your project to create GUIs that use SpiGUI.
  */
-public class SpiGUI {
+public final class SpiGUI {
 
     /** The plugin that owns this instance of SpiGUI. */
     private final JavaPlugin plugin;

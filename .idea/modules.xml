@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SpiGUI.main.iml" filepath="$PROJECT_DIR$/.idea/modules/SpiGUI.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SpiGUI.test.iml" filepath="$PROJECT_DIR$/.idea/modules/SpiGUI.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/SpiGUI.core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/core/SpiGUI.core.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/SpiGUI.core.test.iml" filepath="$PROJECT_DIR$/.idea/modules/core/SpiGUI.core.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/demo/SpiGUI.demo.main.iml" filepath="$PROJECT_DIR$/.idea/modules/demo/SpiGUI.demo.main.iml" />
     </modules>
   </component>
 </project>

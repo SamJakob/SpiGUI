@@ -15,12 +15,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -45,26 +45,25 @@ public class SpiGUITest extends JavaPlugin {
     private final Map<Player, Integer> gems = new HashMap<>();
     // End: variables for demonstration purposes.
 
+    /**
+     * Default constructor.
+     */
+    public SpiGUITest() {
+    }
+
     @Override
     public void onEnable() {
         spiGUI = new SpiGUI(this);
     }
 
     @Override
-    public void onDisable() {
-
-    }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull final CommandSender sender, final Command command, @NotNull final String label, @NotNull final String[] args) {
         if (command.getLabel().equalsIgnoreCase("spigui")) {
 
-            if (!(sender instanceof Player)) {
+            if (!(sender instanceof Player player)) {
                 sender.sendMessage("[SpiGUI] [ERROR] You must be a player to run this command.");
                 return true;
             }
-
-            Player player = (Player) sender;
 
             // START DEFAULT INVENTORY
 
@@ -116,11 +115,11 @@ public class SpiGUITest extends JavaPlugin {
                 });
 
                 myAwesomeMenu.setButton(0, 10, new SGButton(
-                        new ItemBuilder(Material.SKULL_ITEM)
+                        new ItemBuilder(Material.LEGACY_SKULL_ITEM)
                                 .skullOwner(player.getName())
                                 .name("&e&l" + player.getDisplayName())
                                 .lore(
-                                        "&eGame Mode: &6" + player.getGameMode().toString(),
+                                        "&eGame Mode: &6" + player.getGameMode(),
                                         "&eLocation: &6" + String.format(
                                                 "%.0f, %.0f, %.0f",
                                                 player.getLocation().getX(),
@@ -203,7 +202,7 @@ public class SpiGUITest extends JavaPlugin {
 
                                 private SGButton nextColorButton() {
                                     return new SGButton(
-                                            new ItemBuilder(Material.STAINED_GLASS_PANE)
+                                            new ItemBuilder(Material.LEGACY_STAINED_GLASS_PANE)
                                                     .name("&" + Integer.toHexString(currentColor) + "&lSpiGUI!!!")
                                                     .data(currentColor)
                                                     .build()
@@ -264,19 +263,19 @@ public class SpiGUITest extends JavaPlugin {
                     // Generate 3 to 8 random matches.
                     List<Match> matches = IntStream.range(0, ThreadLocalRandom.current().nextInt(5) + 3)
                             .mapToObj((i) -> Match.generateFakeMatch(true))
-                            .collect(Collectors.toList());
+                            .toList();
 
                     for (int i = 0; i < matches.size(); i++) {
                         Match match = matches.get(i);
 
-                        refreshTestMenu.setButton(i, new SGButton(new ItemBuilder(match.getKit().getIcon())
-                                .name(match.getKit().getName())
+                        refreshTestMenu.setButton(i, new SGButton(new ItemBuilder(match.getKit().icon())
+                                .name(match.getKit().name())
                                 .lore(
                                     String.format("&a%s &evs. &a%s", match.getPlayerNames()[0], match.getPlayerNames()[1]),
                                     String.format("&fTime: &b%s", match.getTime()),
                                     "",
-                                    String.format("&fKit: &b%s", match.getKit().getName()),
-                                    String.format("&fArena: &b%s &7(%s)", match.getArena(), match.getKit().getName())
+                                    String.format("&fKit: &b%s", match.getKit().name()),
+                                    String.format("&fArena: &b%s &7(%s)", match.getArena(), match.getKit().name())
                                 )
                                 .build()));
                     }
@@ -288,18 +287,18 @@ public class SpiGUITest extends JavaPlugin {
                             for (int i = 0; i < matches.size(); i++) {
                                 Match match = matches.get(i);
 
-                                refreshTestMenu.setButton(i, new SGButton(new ItemBuilder(match.getKit().getIcon())
+                                refreshTestMenu.setButton(i, new SGButton(new ItemBuilder(match.getKit().icon())
                                         .flag(ItemFlag.HIDE_ATTRIBUTES)
                                         .flag(ItemFlag.HIDE_DESTROYS)
                                         .flag(ItemFlag.HIDE_PLACED_ON)
-                                        .flag(ItemFlag.HIDE_POTION_EFFECTS)
-                                        .name(match.getKit().getName())
+                                        .flag(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
+                                        .name(match.getKit().name())
                                         .lore(
                                                 String.format("&a%s &evs. &a%s", match.getPlayerNames()[0], match.getPlayerNames()[1]),
                                                 String.format("&fTime: &b%s", match.getTime()),
                                                 "",
-                                                String.format("&fKit: &b%s", match.getKit().getName()),
-                                                String.format("&fArena: &b%s &7(%s)", match.getArena(), match.getKit().getName())
+                                                String.format("&fKit: &b%s", match.getKit().name()),
+                                                String.format("&fArena: &b%s &7(%s)", match.getArena(), match.getKit().name())
                                         )
                                         .build()));
                             }
@@ -331,22 +330,7 @@ public class SpiGUITest extends JavaPlugin {
 
     // The following is mock classes/data for the above test GUIs.
 
-    private static class Kit {
-        private final String name;
-        private final ItemStack icon;
-
-        public Kit(String name, ItemStack icon) {
-            this.name = name;
-            this.icon = icon;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        public ItemStack getIcon() {
-            return this.icon;
-        }
+    private record Kit(String name, ItemStack icon) {
     }
 
     private static class Match {
@@ -370,7 +354,11 @@ public class SpiGUITest extends JavaPlugin {
         };
         private static final String[] fakeArenas = {"King's Road", "Ilios", "Fort Starr", "The Hopper"};
 
-        /** Generates a Match with fake data. */
+        /**
+         * Generates a Match with fake data for display purposes.
+         *
+         * @return the generated fake match.
+         */
         public static Match generateFakeMatch() { return generateFakeMatch(false); }
 
         public static Match generateFakeMatch(boolean alreadyStarted) {

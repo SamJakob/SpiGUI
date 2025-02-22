@@ -91,7 +91,7 @@ public class SGMenu implements InventoryHolder {
      */
     private HashSet<InventoryAction> blockedAdjacentActions = new HashSet<>(Arrays.asList(DEFAULT_BLOCKED_ADJACENT_ACTIONS));
 
-    /// DEFAULT PERMITTED / BLOCKED ACTIONS ///
+    // -- DEFAULT PERMITTED / BLOCKED ACTIONS  -- //
 
     /**
      * The default set of actions that are permitted if they occur in an SGMenu.
@@ -146,7 +146,7 @@ public class SGMenu implements InventoryHolder {
         this.permittedMenuClickTypes = clickTypes.length > 0 ? new HashSet<>(Arrays.asList(clickTypes)) : new HashSet<>(Arrays.asList(DEFAULT_PERMITTED_MENU_CLICK_TYPES));
     }
 
-    /// INVENTORY SETTINGS ///
+    // -- INVENTORY SETTINGS -- //
 
     /**
      * This is a per-inventory version of {@link SpiGUI#setBlockDefaultInteractions(boolean)}.
@@ -209,7 +209,7 @@ public class SGMenu implements InventoryHolder {
         return this.toolbarBuilder;
     }
 
-    /// INVENTORY OWNER ///
+    // -- INVENTORY OWNER -- //
 
     /**
      * Returns the plugin that the inventory is associated with.
@@ -222,7 +222,7 @@ public class SGMenu implements InventoryHolder {
         return owner;
     }
 
-    /// INVENTORY SIZE ///
+    // -- INVENTORY SIZE -- //
 
     /**
      * Returns the number of rows (of 9 columns) per page of the inventory.
@@ -261,7 +261,7 @@ public class SGMenu implements InventoryHolder {
         this.rowsPerPage = rowsPerPage;
     }
 
-    /// INVENTORY TAG ///
+    // -- INVENTORY TAG -- //
 
     /**
      * This returns the GUI's tag.
@@ -288,7 +288,7 @@ public class SGMenu implements InventoryHolder {
         this.tag = tag;
     }
 
-    /// INVENTORY NAME ///
+    // -- INVENTORY NAME -- //
 
     /**
      * This sets the inventory's display name.
@@ -325,7 +325,7 @@ public class SGMenu implements InventoryHolder {
         return name;
     }
 
-    /// BUTTONS ///
+    // -- BUTTONS -- //
 
     /**
      * Adds the provided {@link SGButton}.
@@ -448,7 +448,7 @@ public class SGMenu implements InventoryHolder {
         return getButton((page * getPageSize()) + slot);
     }
 
-    /// PAGINATION ///
+    // -- PAGINATION -- //
 
     /**
      * Returns the current page of the inventory.
@@ -538,7 +538,7 @@ public class SGMenu implements InventoryHolder {
     }
 
 
-    /// STICKY SLOTS ///
+    // -- STICKY SLOTS -- //
 
     /**
      * Marks a slot as 'sticky', so that when the page is changed,
@@ -609,7 +609,7 @@ public class SGMenu implements InventoryHolder {
         items.entrySet().removeIf(item -> !isStickiedSlot(item.getKey()));
     }
 
-    /// EVENTS ///
+    // -- EVENTS -- //
 
     /**
      * The action to be performed on close.
@@ -760,7 +760,7 @@ public class SGMenu implements InventoryHolder {
         this.getBlockedAdjacentActions().remove(action);
     }
 
-    /// INVENTORY API ///
+    // -- INVENTORY API -- //
 
     /**
      * Refresh an inventory that is currently open for a given viewer.

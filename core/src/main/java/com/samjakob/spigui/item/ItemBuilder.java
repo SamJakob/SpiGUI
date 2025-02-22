@@ -79,16 +79,27 @@ public class ItemBuilder {
 
     /**
      * Sets the display name of the item.
+     *
+     * <p>
      * Color codes using the ampersand (&amp;) are translated, if you want to avoid this,
      * you should wrap your name argument with a {@link ChatColor#stripColor(String)} call.
+     * </p>
+     *
+     * <p>
+     * Bukkit's API can return null for {@link ItemStack#getItemMeta()}, in which case this method will be a no-op.
+     * </p>
      *
      * @param name The desired display name of the item stack.
      * @return The {@link ItemBuilder} instance.
      */
     public ItemBuilder name(String name) {
         ItemMeta stackMeta = stack.getItemMeta();
-        stackMeta.setDisplayName(ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', name));
-        stack.setItemMeta(stackMeta);
+
+        if (stackMeta != null) {
+            stackMeta.setDisplayName(ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', name));
+            stack.setItemMeta(stackMeta);
+        }
+
         return this;
     }
 
