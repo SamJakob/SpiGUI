@@ -76,7 +76,7 @@ public class SpiGUITest extends JavaPlugin {
                 myAwesomeMenu.setToolbarBuilder((slot, page, defaultType, menu) -> {
                     if (slot == 8) {
                         return new SGButton(
-                            new ItemBuilder(Material.EMERALD)
+                            ItemBuilder.create(Material.EMERALD)
                                 .name(String.format("&a&l%d gems", gems.getOrDefault(player, 5)))
                                 .lore(
                                     "&aUse gems to buy cosmetics",
@@ -115,7 +115,7 @@ public class SpiGUITest extends JavaPlugin {
                 });
 
                 myAwesomeMenu.setButton(0, 10, new SGButton(
-                        new ItemBuilder(Material.LEGACY_SKULL_ITEM)
+                        ItemBuilder.create(Material.LEGACY_SKULL_ITEM)
                                 .skullOwner(player.getName())
                                 .name("&e&l" + player.getDisplayName())
                                 .lore(
@@ -132,14 +132,14 @@ public class SpiGUITest extends JavaPlugin {
                 ));
 
                 myAwesomeMenu.setButton(1, 0, new SGButton(
-                        new ItemBuilder(Material.GOLD_ORE)
+                        ItemBuilder.create(Material.GOLD_ORE)
                                 .name("&6Get rich quick!")
                                 .build()
                 ).withListener(event -> {
                     Inventory playerInventory = event.getWhoClicked().getInventory();
 
                     IntStream.range(0, 9).forEach(hotBarSlot -> playerInventory.setItem(
-                            hotBarSlot, new ItemBuilder(
+                            hotBarSlot, ItemBuilder.create(
                                     event.getCurrentItem().getType() == Material.GOLD_ORE
                                             ? Material.GOLD_BLOCK
                                             : event.getCurrentItem().getType()
@@ -159,7 +159,7 @@ public class SpiGUITest extends JavaPlugin {
                             : Material.GOLD_ORE;
 
                     myAwesomeMenu.getButton(1, 0).setIcon(
-                            new ItemBuilder(newMaterial).name(
+                            ItemBuilder.create(newMaterial).name(
                                     newMaterial == Material.GOLD_ORE ? "&6Get rich quick!" : "&7Get poor quick!"
                             ).amount(1).build()
                     );
@@ -202,7 +202,7 @@ public class SpiGUITest extends JavaPlugin {
 
                                 private SGButton nextColorButton() {
                                     return new SGButton(
-                                            new ItemBuilder(Material.LEGACY_STAINED_GLASS_PANE)
+                                            ItemBuilder.create(Material.LEGACY_STAINED_GLASS_PANE)
                                                     .name("&" + Integer.toHexString(currentColor) + "&lSpiGUI!!!")
                                                     .data(currentColor)
                                                     .build()
@@ -248,7 +248,7 @@ public class SpiGUITest extends JavaPlugin {
                     SGMenu inventorySizeTest = SpiGUITest.getSpiGUI().create("Test Menu", 1);
 
                     IntStream.range(0, size).forEach(i -> inventorySizeTest.addButton(new SGButton(
-                            new ItemBuilder(Material.GOLD_ORE).name(String.format("&6Item %d", i + 1))
+                            ItemBuilder.create(Material.GOLD_ORE).name(String.format("&6Item %d", i + 1))
                                     .build()
                     )));
 
@@ -268,7 +268,7 @@ public class SpiGUITest extends JavaPlugin {
                     for (int i = 0; i < matches.size(); i++) {
                         Match match = matches.get(i);
 
-                        refreshTestMenu.setButton(i, new SGButton(new ItemBuilder(match.getKit().icon())
+                        refreshTestMenu.setButton(i, new SGButton(ItemBuilder.from(match.getKit().icon())
                                 .name(match.getKit().name())
                                 .lore(
                                     String.format("&a%s &evs. &a%s", match.getPlayerNames()[0], match.getPlayerNames()[1]),
@@ -287,7 +287,7 @@ public class SpiGUITest extends JavaPlugin {
                             for (int i = 0; i < matches.size(); i++) {
                                 Match match = matches.get(i);
 
-                                refreshTestMenu.setButton(i, new SGButton(new ItemBuilder(match.getKit().icon())
+                                refreshTestMenu.setButton(i, new SGButton(ItemBuilder.from(match.getKit().icon())
                                         .flag(ItemFlag.HIDE_ATTRIBUTES)
                                         .flag(ItemFlag.HIDE_DESTROYS)
                                         .flag(ItemFlag.HIDE_PLACED_ON)
@@ -347,10 +347,10 @@ public class SpiGUITest extends JavaPlugin {
         // Begin mock data.
         private static final String[] fakePlayerNames = {"MoreHaro", "Pixelle", "SpyPlenty", "Winlink", "Herobrine", "Notch", "Dinnerbone", "CinnamonTown", "TreeMushrooms"};
         private static final Kit[] fakeKits = {
-            new Kit("Classic Battle", new ItemBuilder(Material.STONE_SWORD).name("&7Classic Battle").build()),
-            new Kit("OP Battle", new ItemBuilder(Material.DIAMOND_SWORD).name("&bOP Battle").build()),
-            new Kit("Classic UHC", new ItemBuilder(Material.GOLDEN_APPLE).name("&eClassic UHC").build()),
-            new Kit("OP UHC", new ItemBuilder(Material.GOLDEN_APPLE).data((short) 1).name("&6OP UHC").build()),
+            new Kit("Classic Battle", ItemBuilder.create(Material.STONE_SWORD).name("&7Classic Battle").build()),
+            new Kit("OP Battle", ItemBuilder.create(Material.DIAMOND_SWORD).name("&bOP Battle").build()),
+            new Kit("Classic UHC", ItemBuilder.create(Material.GOLDEN_APPLE).name("&eClassic UHC").build()),
+            new Kit("OP UHC", ItemBuilder.create(Material.GOLDEN_APPLE).data((short) 1).name("&6OP UHC").build()),
         };
         private static final String[] fakeArenas = {"King's Road", "Ilios", "Fort Starr", "The Hopper"};
 

@@ -8,54 +8,60 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.Arrays;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
- * A helper class for creating or modifying ItemStacks.
- * <br>
- * The class wraps an ItemStack object and provides convenient chainable, 'builder-pattern' methods for
- * manipulating the stack's metadata.
- * <br>
- * The intention is that this class will be used in builder form - for example;
+ * A helper for creating and modifying {@link ItemStack}s.
+ *
+ * <p>
+ * This class provides a convenient chainable ('builder pattern') API for manipulating the metadata of an
+ * {@link ItemStack}, replacing several calls into a clean one-liner in many cases.
+ * </p>
+ *
+ * <p>
+ * <b>Note:</b> as a convention (to make debugging and identifying potential issues simpler) all methods on this
+ * interface shall throw a {@link NullPointerException} if the item meta is null. This would only happen if Bukkit's
+ * API failed to produce an item meta object for an item type which shouldn't ever happen.
+ * </p>
+ *
  * <pre>
- * new ItemBuilder(Material.SPONGE).name("&amp;cAlmighty sponge").amount(21).build();
+ * {@code
+ * final var sponge = ItemBuilder.create(Material.SPONGE).name("&amp;cAlmighty sponge").amount(21).build();
+ * }
  * </pre>
  *
  * @author SamJakob
- * @version 2.0.0
+ * @version 3.0.0
  * @see ItemStack
  */
-public class ItemBuilder {
+public interface ItemBuilder {
 
     /**
-     * The item stack being built.
-     */
-    private final ItemStack stack;
-
-    /* CONSTRUCT */
-
-    /**
-     * Creates an {@link ItemStack} and {@link ItemBuilder} wrapper for a new stack with the
-     * given type.
+     * Create a new {@link ItemBuilder} for the given {@link Material} type.
      *
-     * @param material The {@link Material} to use when creating the stack.
+     * @param material type of stack to create a builder for.
+     * @return the constructed {@link ItemBuilder}.
      */
-    public ItemBuilder (Material material) {
-        this.stack = new ItemStack(material);
+    @Nonnull
+    static ItemBuilder create(@Nonnull Material material) {
+        return new LegacyItemBuilder(material);
     }
 
     /**
-     * Creates an ItemBuilder wrapper for a given stack.
-     * @param stack The ItemStack to wrap.
+     * Create a new {@link ItemBuilder} that uses the provided {@link ItemStack} and associated metadata as the initial
+     * configuration.
+     *
+     * @param stack to derive the builder options from.
+     * @return the constructed {@link ItemBuilder}.
      */
-    public ItemBuilder (ItemStack stack) {
-        this.stack = stack;
+    @Nonnull
+    static ItemBuilder from(@Nonnull ItemStack stack) {
+        return new LegacyItemBuilder(stack.clone());
     }
-
-    /* MANIPULATE / READ */
 
     /**
      * Sets the type ({@link Material}) of the ItemStack.
@@ -63,63 +69,50 @@ public class ItemBuilder {
      * @param material The {@link Material} of the stack.
      * @return The {@link ItemBuilder} instance.
      */
-    public ItemBuilder type(Material material) {
-        stack.setType(material);
-        return this;
-    }
+    @Nonnull
+    ItemBuilder type(@Nonnull Material material);
 
     /**
      * Returns the type ({@link Material}) of the ItemStack.
      *
      * @return The {@link Material} of the stack.
      */
-    public Material getType() {
-        return stack.getType();
-    }
+    @Nonnull
+    Material getType();
 
     /**
      * Sets the display name of the item.
      *
      * <p>
-     * Color codes using the ampersand (&amp;) are translated, if you want to avoid this,
+     * Color codes using the ampersand ({@code &}) are translated, if you want to avoid this,
      * you should wrap your name argument with a {@link ChatColor#stripColor(String)} call.
-     * </p>
-     *
-     * <p>
-     * Bukkit's API can return null for {@link ItemStack#getItemMeta()}, in which case this method will be a no-op.
      * </p>
      *
      * @param name The desired display name of the item stack.
      * @return The {@link ItemBuilder} instance.
      */
-    public ItemBuilder name(String name) {
-        ItemMeta stackMeta = stack.getItemMeta();
-
-        if (stackMeta != null) {
-            stackMeta.setDisplayName(ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', name));
-            stack.setItemMeta(stackMeta);
-        }
-
-        return this;
-    }
+    @Nonnull
+    ItemBuilder name(@Nullable String name);
 
     /**
      * Returns either the display name of the item, if it exists, or null if it doesn't.
-     * <br>
+     *
+     * <p>
      * You should note that this method fetches the name directly from the stack's {@link ItemMeta},
      * so you should take extra care when comparing names with color codes - particularly if you used the
      * {@link #name(String)} method as they will be in their translated sectional symbol (§) form,
-     * rather than their 'coded' form (&amp;).
-     * <br>
+     * rather than their 'coded' form ({@code &}).
+     * </p>
+     *
+     * <p>
      * For example, if you used {@link #name(String)} to set the name to '&amp;cMy Item', the output of this
      * method would be '§cMy Item'
+     * </p>
      *
      * @return The item's display name as returned from its {@link ItemMeta}.
      */
-    public String getName() {
-        if (!stack.hasItemMeta() || !stack.getItemMeta().hasDisplayName()) return null;
-        return stack.getItemMeta().getDisplayName();
-    }
+    @Nullable
+    String getName();
 
     /**
      * Sets the amount of items in the {@link ItemStack}.
@@ -127,19 +120,15 @@ public class ItemBuilder {
      * @param amount The new amount.
      * @return The {@link ItemBuilder} instance.
      */
-    public ItemBuilder amount(int amount) {
-        stack.setAmount(amount);
-        return this;
-    }
+    @Nonnull
+    ItemBuilder amount(int amount);
 
     /**
      * Returns the amount of items in the {@link ItemStack}.
      *
      * @return The amount of items in the stack.
      */
-    public int getAmount() {
-        return stack.getAmount();
-    }
+    int getAmount();
 
     /**
      * Sets the lore of the item. This method is a var-args alias for the
@@ -148,115 +137,111 @@ public class ItemBuilder {
      * @param lore The desired lore of the item, with each line as a separate string.
      * @return The {@link ItemBuilder} instance.
      */
-    public ItemBuilder lore(String... lore) {
-        return lore(Arrays.asList(lore));
-    }
+    @Nonnull
+    ItemBuilder lore(@Nullable String... lore);
 
     /**
      * Sets the lore of the item.
      * As with {@link #name(String)}, color codes will be replaced. Each string represents
      * a line of the lore.
-     * <br>
+     *
+     * <p>
      * Lines will not be automatically wrapped or truncated, so it is recommended you take
      * some consideration into how the item will be rendered with the lore.
+     * </p>
      *
      * @param lore The desired lore of the item, with each line as a separate string.
      * @return The {@link ItemBuilder} instance.
      */
-    public ItemBuilder lore(List<String> lore) {
-        lore.replaceAll(textToTranslate -> ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', textToTranslate));
-
-        ItemMeta stackMeta = stack.getItemMeta();
-        stackMeta.setLore(lore);
-        stack.setItemMeta(stackMeta);
-        return this;
-    }
+    @Nonnull
+    ItemBuilder lore(@Nullable List<String> lore);
 
     /**
      * Gets the lore of the item as a list of strings. Each string represents a line of the
      * item's lore in-game.
-     * <br>
+     *
+     * <p>
      * As with {@link #name(String)}, it should be noted that color-coded lore lines will
      * be returned with the colors codes already translated.
+     * </p>
      *
      * @return The lore of the item.
      */
-    public List<String> getLore() {
-        if (!stack.hasItemMeta() || !stack.getItemMeta().hasLore()) return null;
-        return stack.getItemMeta().getLore();
-    }
+    @Nullable
+    List<String> getLore();
 
     /**
-     * An alias for {@link #durability(short)} that takes an {@link ItemDataColor} as an
-     * argument instead. This is to improve code readability when working with items such
-     * as glass panes, where the data value represents a glass pane's color.
-     * <br>
-     * This method will still be functional for items where the data value does not represent
-     * the item's color, however it will obviously be nonsensical.
+     * Set the color of items (where those items can have a color applied to them).
+     *
+     * <p>
+     * The behavior of this method is undefined when an item does not have color values associated with it.
+     * </p>
      *
      * @param color The desired color of the item.
      * @return The {@link ItemBuilder} instance.
      */
-    public ItemBuilder color(ItemDataColor color) {
-        return durability(color.getValue());
-    }
+    @Nonnull
+    ItemBuilder color(@Nonnull ItemDataColor color);
 
     /**
-     * An alias for {@link #durability(short)}.
+     * Set the data value of the item.
      *
-     * @param data The desired data-value (durability) of the item.
+     * <p>
+     * The behavior of this method is undefined when an item does not have a data value associated with it.
+     * </p>
+     *
      * @return The {@link ItemBuilder} instance.
      */
-    public ItemBuilder data(short data) {
-        return durability(data);
-    }
+    @Nonnull
+    ItemBuilder data(short data);
 
     /**
-     * Sets the durability (data value) of the item.
+     * Sets the durability of the item.
+     *
+     * <p>
+     * The behavior of this method is undefined when an item does not have a data value associated with it.
+     * </p>
      *
      * @param durability The desired durability of the item.
      * @return The updated {@link ItemBuilder} object.
      */
-    public ItemBuilder durability(short durability) {
-        stack.setDurability(durability);
-        return this;
-    }
+    @Nonnull
+    ItemBuilder durability(short durability);
 
     /**
      * Returns the durability or data value of the item.
      *
      * @return The durability of the item.
      */
-    public short getDurability() {
-        return stack.getDurability();
-    }
+    short getDurability();
 
     /**
-     * Essentially a proxy for {@link ItemDataColor#getByValue(short)}.
-     * <br>
-     * Similar to {@link #getDurability()} however it returns the value as an {@link ItemDataColor}
-     * where it is applicable, or null where it isn't.
+     * Returns the color of the item.
      *
-     * @return The appropriate {@link ItemDataColor} of the item or null.
+     * <p>
+     * The behavior of this method is undefined when an item does not have color values associated with it.
+     * </p>
+     *
+     * @return The {@link ItemDataColor} of the item or null.
      */
-    public ItemDataColor getColor() {
-        return ItemDataColor.getByValue(stack.getDurability());
-    }
+    @Nullable
+    ItemDataColor getColor();
 
     /**
      * Adds the specified enchantment to the stack.
-     * <br>
-     * This method uses {@link ItemStack#addUnsafeEnchantment(Enchantment, int)} rather than {@link ItemStack#addEnchantment(Enchantment, int)}
-     * to avoid the associated checks of whether level is within the range for the enchantment.
+     *
+     * <p>
+     * This method uses {@link ItemStack#addUnsafeEnchantment(Enchantment, int)} rather than
+     * {@link ItemStack#addEnchantment(Enchantment, int)} to avoid the associated checks of whether level is within the
+     * range for the enchantment.
+     * </p>
      *
      * @param enchantment The enchantment to apply to the item.
      * @param level The level of the enchantment to apply to the item.
      * @return The {@link ItemBuilder} instance.
      */
-    public ItemBuilder enchant(Enchantment enchantment, int level) {
-        stack.addUnsafeEnchantment(enchantment, level);
-        return this;
-    }
+    @Nonnull
+    ItemBuilder enchant(@Nonnull Enchantment enchantment, int level);
 
     /**
      * Removes the specified enchantment from the stack.
@@ -264,10 +249,8 @@ public class ItemBuilder {
      * @param enchantment The enchantment to remove from the item.
      * @return The {@link ItemBuilder} instance.
      */
-    public ItemBuilder unenchant(Enchantment enchantment) {
-        stack.removeEnchantment(enchantment);
-        return this;
-    }
+    @Nonnull
+    ItemBuilder unenchant(@Nonnull Enchantment enchantment);
 
     /**
      * Accepts a variable number of {@link ItemFlag}s to apply to the stack.
@@ -275,12 +258,8 @@ public class ItemBuilder {
      * @param flag A variable-length argument containing the flags to be applied.
      * @return The {@link ItemBuilder} instance.
      */
-    public ItemBuilder flag(ItemFlag ...flag) {
-        ItemMeta meta = stack.getItemMeta();
-        meta.addItemFlags(flag);
-        stack.setItemMeta(meta);
-        return this;
-    }
+    @Nonnull
+    ItemBuilder flag(@Nonnull ItemFlag... flag);
 
     /**
      * Accepts a variable number of {@link ItemFlag}s to remove from the stack.
@@ -288,12 +267,8 @@ public class ItemBuilder {
      * @param flag A variable-length argument containing the flags to be removed.
      * @return The {@link ItemBuilder} instance.
      */
-    public ItemBuilder deflag(ItemFlag ...flag) {
-        ItemMeta meta = stack.getItemMeta();
-        meta.removeItemFlags(flag);
-        stack.setItemMeta(meta);
-        return this;
-    }
+    @Nonnull
+    ItemBuilder deflag(@Nonnull ItemFlag... flag);
 
     /**
      * If the item has {@link SkullMeta} (i.e. if the item is a skull), this can
@@ -305,62 +280,53 @@ public class ItemBuilder {
      * @param name The name of the player the skull item should resemble.
      * @return The {@link ItemBuilder} instance.
      */
-    public ItemBuilder skullOwner(String name) {
-        if (!(stack.getItemMeta() instanceof SkullMeta)) return this;
-
-        stack.setDurability((byte) 3);
-        SkullMeta meta = (SkullMeta) stack.getItemMeta();
-        meta.setOwner(name);
-        stack.setItemMeta(meta);
-
-        return this;
-    }
-
-    /* PREDICATE MANIPULATION */
+    @Nonnull
+    ItemBuilder skullOwner(@Nullable String name);
 
     /**
      * This is used to, inline, perform an operation if a given condition is true.
-     * <br>
+     *
+     * <p>
      * The {@link ItemBuilder} instance is supplied to both the predicate (condition) and result function.
-     * The result of <code>then</code> is ignored as the ItemBuilder reference is passed to it.
-     * <br>
+     * </p>
+     *
      * Example:
      * <pre>
+     * {@code
      * // Renames the ItemStack, if and only if, the stack's type is Acacia Doors.
-     * ifThen(stack -&gt; stack.getType() == Material.ACACIA_DOOR, stack -&gt; stack.name("&amp;aMagic Door"));
+     * ifThen(stack -> stack.getType() == Material.ACACIA_DOOR, stack -> stack.name("&aMagic Door"));
+     * }
      * </pre>
      *
      * @param ifTrue The condition upon which, <code>then</code> should be performed.
      * @param then The action to perform if the predicate, <code>ifTrue</code>, is true.
      * @return The {@link ItemBuilder} instance.
      */
-    public ItemBuilder ifThen(Predicate<ItemBuilder> ifTrue, Function<ItemBuilder, Object> then) {
+    @Nonnull
+    default ItemBuilder ifThen(Predicate<ItemBuilder> ifTrue, Consumer<ItemBuilder> then) {
         if (ifTrue.test(this))
-            then.apply(this);
+            then.accept(this);
 
         return this;
     }
 
-    /* BUILD */
-
     /**
-     * An alias for {@link #get()}.
-     * @return See {@link #get()}.
-     */
-    public ItemStack build() {
-        return get();
-    }
-
-    /**
-     * Returns the {@link ItemStack} that the {@link ItemBuilder} instance represents.
-     * <br>
-     * The modifications are performed as they are called, so this method simply returns
-     * the class's private stack field.
+     * Returns the {@link ItemStack} that has been configured on the {@link ItemBuilder}.
      *
      * @return The manipulated ItemStack.
      */
-    public ItemStack get() {
-        return stack;
+    @Nonnull
+    ItemStack build();
+
+    /**
+     * An alias for {@link #build()}.
+     *
+     * @return the built item stack.
+     * @see #build()
+     */
+    @Nonnull
+    default ItemStack get() {
+        return build();
     }
 
 }

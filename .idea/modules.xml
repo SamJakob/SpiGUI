@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/SpiGUI.core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/core/SpiGUI.core.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/SpiGUI.core.test.iml" filepath="$PROJECT_DIR$/.idea/modules/core/SpiGUI.core.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/demo/SpiGUI.demo.main.iml" filepath="$PROJECT_DIR$/.idea/modules/demo/SpiGUI.demo.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/legacy/SpiGUI.legacy.main.iml" filepath="$PROJECT_DIR$/.idea/modules/legacy/SpiGUI.legacy.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/legacy/SpiGUI.legacy.test.iml" filepath="$PROJECT_DIR$/.idea/modules/legacy/SpiGUI.legacy.test.iml" />
     </modules>
   </component>
 </project>
