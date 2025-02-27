@@ -5,6 +5,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
+import javax.annotation.Nonnull;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -22,8 +23,6 @@ import com.samjakob.spigui.SpiGUI;
 import com.samjakob.spigui.buttons.SGButton;
 import com.samjakob.spigui.item.ItemBuilder;
 import com.samjakob.spigui.menu.SGMenu;
-
-import org.jetbrains.annotations.NotNull;
 
 /**
  * SpiGUITest
@@ -59,10 +58,10 @@ public class SpiGUITest extends JavaPlugin {
 
     @Override
     public boolean onCommand(
-            @NotNull final CommandSender sender,
+            @Nonnull final CommandSender sender,
             final Command command,
-            @NotNull final String label,
-            @NotNull final String[] args) {
+            @Nonnull final String label,
+            @Nonnull final String[] args) {
         if (command.getLabel().equalsIgnoreCase("spigui")) {
 
             if (!(sender instanceof Player player)) {

@@ -2,6 +2,8 @@ package com.samjakob.spigui.menu;
 
 import java.util.*;
 import java.util.function.Consumer;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -33,47 +35,53 @@ import com.samjakob.spigui.toolbar.SGToolbarButtonType;
 public class SGMenu implements InventoryHolder {
 
     /** The plugin (owner of the SpiGUI instance) that created this inventory. */
+    @Nonnull
     private final JavaPlugin owner;
+
     /** The SpiGUI instance that created this inventory. */
+    @Nonnull
     private final SpiGUI spiGUI;
+
+    // Inventory creation parameters
 
     /** The title of the inventory. */
     private String name;
+
     /** A tag that may be used to identify the type of inventory. */
     private String tag;
+
     /** The number of rows to display per page. */
     private int rowsPerPage;
 
+    // Items and slots.
+
     /** The map of items in the inventory. */
     private final Map<Integer, SGButton> items;
+
     /** The set of sticky slots (that should remain when the page is changed). */
     private final HashSet<Integer> stickiedSlots;
 
-    /** The currently selected page of the inventory. */
-    private int currentPage;
-    /**
-     * Whether the "default" behaviors and interactions should be permitted or blocked. (True prevents default behaviors
-     * such as moving items in the inventory, false allows them).
-     */
-    private boolean blockDefaultInteractions;
+    /** The toolbar builder used to render this GUI's toolbar. */
+    private SGToolbarBuilder toolbarBuilder;
+
     /**
      * Whether the pagination functionality should be enabled. (True adds pagination buttons when they're needed, false
      * does not).
      */
     private boolean enableAutomaticPagination;
 
-    /** The toolbar builder used to render this GUI's toolbar. */
-    private SGToolbarBuilder toolbarBuilder;
-    /** The action to be performed on close. */
-    private Consumer<SGMenu> onClose;
-    /** The action to be performed on page change. */
-    private Consumer<SGMenu> onPageChange;
+    // Current state
+
+    /** The currently selected page of the inventory. */
+    private int currentPage;
+
+    // Interaction management
 
     /**
-     * Any click types not in this array will be immediately prevented in this menu without further processing (i.e.,
-     * the button's listener will not be called).
+     * Whether the "default" behaviors and interactions should be permitted or blocked. (True prevents default behaviors
+     * such as moving items in the inventory, false allows them).
      */
-    private HashSet<ClickType> permittedMenuClickTypes;
+    private boolean blockDefaultInteractions;
 
     /**
      * Any actions in this list will be blocked immediately without further processing if they occur in a SpiGUI menu.
@@ -83,6 +91,20 @@ public class SGMenu implements InventoryHolder {
     /** Any actions in this list will be blocked if they occur in the adjacent inventory to an SGMenu. */
     private HashSet<InventoryAction> blockedAdjacentActions =
             new HashSet<>(Arrays.asList(DEFAULT_BLOCKED_ADJACENT_ACTIONS));
+
+    /**
+     * Any click types not in this array will be immediately prevented in this menu without further processing (i.e.,
+     * the button's listener will not be called).
+     */
+    private HashSet<ClickType> permittedMenuClickTypes;
+
+    // Event handlers
+
+    /** The action to be performed on close. */
+    private Consumer<SGMenu> onClose;
+
+    /** The action to be performed on page change. */
+    private Consumer<SGMenu> onPageChange;
 
     // -- DEFAULT PERMITTED / BLOCKED ACTIONS  -- //
 
@@ -114,9 +136,15 @@ public class SGMenu implements InventoryHolder {
      * @param tag The tag associated with this menu.
      * @param clickTypes The set of permitted click types.
      */
-    public SGMenu(JavaPlugin owner, SpiGUI spiGUI, String name, int rowsPerPage, String tag, ClickType... clickTypes) {
-        this.owner = owner;
-        this.spiGUI = spiGUI;
+    public SGMenu(
+            @Nonnull JavaPlugin owner,
+            @Nonnull SpiGUI spiGUI,
+            String name,
+            int rowsPerPage,
+            String tag,
+            @Nullable ClickType... clickTypes) {
+        this.owner = Objects.requireNonNull(owner);
+        this.spiGUI = Objects.requireNonNull(spiGUI);
         this.name = ChatColor.translateAlternateColorCodes('&', name);
         this.rowsPerPage = rowsPerPage;
         this.tag = tag;
@@ -126,7 +154,7 @@ public class SGMenu implements InventoryHolder {
 
         this.currentPage = 0;
 
-        this.permittedMenuClickTypes = clickTypes.length > 0
+        this.permittedMenuClickTypes = clickTypes != null && clickTypes.length > 0
                 ? new HashSet<>(Arrays.asList(clickTypes))
                 : new HashSet<>(Arrays.asList(DEFAULT_PERMITTED_MENU_CLICK_TYPES));
     }
@@ -202,6 +230,7 @@ public class SGMenu implements InventoryHolder {
      *
      * @return The plugin the inventory is associated with.
      */
+    @Nonnull
     public JavaPlugin getOwner() {
         return owner;
     }
@@ -810,5 +839,15 @@ public class SGMenu implements InventoryHolder {
         }
 
         return inventory;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", SGMenu.class.getSimpleName() + "[", "]")
+                .add("name='" + name + "'")
+                .add("tag='" + tag + "'")
+                .add("rowsPerPage=" + rowsPerPage)
+                .add("currentPage=" + currentPage)
+                .toString();
     }
 }

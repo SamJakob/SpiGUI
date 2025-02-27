@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="21" />
+    <bytecodeTargetLevel target="21">
+      <module name="com.samjakob.SpiGUI.demo.main" target="23" />
+      <module name="com.samjakob.SpiGUI.demo.test" target="23" />
+      <module name="SpiGUI.demo.main" target="23" />
+      <module name="SpiGUI.demo.test" target="23" />
+    </bytecodeTargetLevel>
   </component>
 </project>

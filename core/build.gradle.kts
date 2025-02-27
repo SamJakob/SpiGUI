@@ -1,23 +1,40 @@
-repositories {
-    // PaperMC Nexus (for MockBukkit)
-    maven (
-        url = "https://repo.papermc.io/repository/maven-public/"
-    ) {
-        content {
-            includeGroup("org.mockbukkit")
-            includeGroup("io.papermc.paper")
-            includeGroup("com.mojang")
-            includeGroup("net.md-5")
-        }
-    }
+plugins {
+    TestingPlugin
 }
 
 dependencies {
-    // Spigot API
-    compileOnly("org.spigotmc:spigot-api:1.21.4-R0.1-SNAPSHOT")
+    // JavaX annotations (@Nonnull and @Nullable)
+    compileOnly(libraries.annotations.spotbugs)
 
-    // MockBukkit
-    testImplementation("org.mockbukkit.mockbukkit:mockbukkit-v1.21:4.33.5")
+    // Spigot API
+    compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
+    testImplementation("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
+
+    withJavadocJar()
+}
+
+val javadocSources = sourceSets.create("javadoc")
+
+tasks.withType<Javadoc> {
+    javadocTool.set(javaToolchains.javadocToolFor {
+        languageVersion = JavaLanguageVersion.of(21)
+    })
+
+    doLast {
+        copy {
+            from(javadocSources.resources.srcDirs.map { it.path })
+            into(outputs.files.asPath)
+        }
+    }
 }
 
 tasks.withType<Jar> {

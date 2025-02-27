@@ -46,11 +46,15 @@ allprojects {
     }
 
     java {
+        // The baseline Java version for the SpiGUI project is Java 21.
+        //
+        // The demo project should use the latest available Java (or a very recent version if the latest is
+        // inconvenient).
+        //
+        // Core components of SpiGUI will either use the baseline version or they will fallback to an older
+        // version if needed for compatibility reasons (e.g., the legacy/compat component).
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
-
-        withJavadocJar()
-        withSourcesJar()
     }
 }
 
@@ -73,6 +77,7 @@ subprojects {
         classpath += configurations.compileClasspath.get()
 
         options.memberLevel = JavadocMemberLevel.PRIVATE
+        isFailOnError = true
     }
 }
 
@@ -97,48 +102,66 @@ spotless {
         target(allprojects.map { it.sourceSets.main.get().allJava })
 
         toggleOffOn()
-        palantirJavaFormat().formatJavadoc(true)
+        palantirJavaFormat("2.55.0").formatJavadoc(true)
 
         importOrder("java|javax", "org.bukkit", "com.samjakob.spigui", "")
         removeUnusedImports()
-        formatAnnotations()
+    }
+}
+
+tasks.named<Jar>("jar") {
+    enabled = false
+}
+
+val spiGUI = definePublishableArtifacts("SpiGUI", ":spigui")
+val spiGUIv2 = definePublishableArtifacts("SpiGUI-v2", ":spigui-v2")
+
+artifacts {
+    spiGUI.forEach { archives(it.jar) }
+    spiGUIv2.forEach { archives(it.jar) }
+}
+
+val defaultPublication = Action<MavenPom> {
+    name = "SpiGUI"
+    description = "A comprehensive GUI API for Spigot with pages support."
+    url = "https://github.com/SamJakob/SpiGUI"
+    packaging = "jar"
+
+    licenses {
+        license {
+            name = "MIT License"
+            url = "https://opensource.org/licenses/MIT"
+        }
+    }
+
+    developers {
+        developer {
+            name = "SamJakob"
+            email = "me@samjakob.com"
+            organization = "SamJakob"
+            organizationUrl = "https://samjakob.com"
+        }
+    }
+
+    scm {
+        connection = "scm:git:git://github.com/SamJakob/SpiGUI.git"
+        developerConnection = "scm:git:ssh://github.com:SamJakob/SpiGUI.git"
+        url = "https://github.com/SamJakob/SpiGUI"
     }
 }
 
 publishing {
     publications {
         create<MavenPublication>("SpiGUI") {
-            // Build only the core into the SpiGUI distributable JAR.
-            from(project(":core").components["java"])
+            artifactId = "SpiGUI"
+            pom(defaultPublication)
+            spiGUI.forEach { artifact(it.jar) }
+        }
 
-            pom {
-                name = "SpiGUI"
-                description = "A comprehensive GUI API for Spigot with pages support."
-                url = "https://github.com/SamJakob/SpiGUI"
-                packaging = "jar"
-
-                licenses {
-                    license {
-                        name = "MIT License"
-                        url = "https://opensource.org/licenses/MIT"
-                    }
-                }
-
-                developers {
-                    developer {
-                        name = "SamJakob"
-                        email = "me@samjakob.com"
-                        organization = "SamJakob"
-                        organizationUrl = "https://samjakob.com"
-                    }
-                }
-
-                scm {
-                    connection = "scm:git:git://github.com/SamJakob/SpiGUI.git"
-                    developerConnection = "scm:git:ssh://github.com:SamJakob/SpiGUI.git"
-                    url = "https://github.com/SamJakob/SpiGUI"
-                }
-            }
+        create<MavenPublication>("SpiGUI-v2") {
+            artifactId = "SpiGUI-v2"
+            pom(defaultPublication)
+            spiGUIv2.forEach { artifact(it.jar) }
         }
     }
 
@@ -161,9 +184,10 @@ publishing {
     }
 }
 
-if (hasSonatypeCredentials) {
-    signing {
-        useGpgCmd()
-        sign(publishing.publications["SpiGUI"])
-    }
-}
+//if (hasSonatypeCredentials) {
+//    signing {
+//        useGpgCmd()
+//        sign(publishing.publications["SpiGUI"])
+//        sign(publishing.publications["SpiGUI-v2"])
+//    }
+//}

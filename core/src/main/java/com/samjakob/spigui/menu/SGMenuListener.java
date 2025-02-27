@@ -2,6 +2,8 @@ package com.samjakob.spigui.menu;
 
 import java.util.Objects;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -27,6 +29,7 @@ public class SGMenuListener implements Listener {
 
     /** The plugin that this listener is registered for. */
     private final JavaPlugin owner;
+
     /** The instance of {@link SpiGUI} this listener is operating for. */
     private final SpiGUI spiGUI;
 
@@ -36,9 +39,9 @@ public class SGMenuListener implements Listener {
      * @param owner The plugin that this listener is registered for.
      * @param spiGUI The instance of {@link SpiGUI} this listener is operating for.
      */
-    public SGMenuListener(JavaPlugin owner, SpiGUI spiGUI) {
-        this.owner = owner;
-        this.spiGUI = spiGUI;
+    public SGMenuListener(@Nonnull JavaPlugin owner, @Nonnull SpiGUI spiGUI) {
+        this.owner = Objects.requireNonNull(owner);
+        this.spiGUI = Objects.requireNonNull(spiGUI);
     }
 
     /**
@@ -52,7 +55,7 @@ public class SGMenuListener implements Listener {
      * @param inventory The inventory to check.
      * @return False if inventory event should be handled by {@link SGMenuListener}, true if not.
      */
-    private static boolean shouldIgnoreInventoryEvent(Inventory inventory) {
+    private static boolean shouldIgnoreInventoryEvent(@Nullable Inventory inventory) {
         // Note that this is inverted, as all of its uses are inverted.
         // That is, we check if the inventory is a valid SGMenu and then
         // negate that to return false if it is (because a valid SGMenu
@@ -67,19 +70,20 @@ public class SGMenuListener implements Listener {
      * should you need to.
      *
      * <p>The plugin parameter refers to your plugin, the one using SpiGUI. It needs to be passed in here so that SpiGUI
-     * can check whether the {@link SGMenu} inventory belongs to your plugin.
+     * can check whether the {@link SGMenu} inventory belongs to your plugin. The plugin cannot be null as this would
+     * prevent any inventory event from matching, so this method will throw if plugin is null.
      *
      * @param plugin The {@link JavaPlugin} plugin instance.
      * @param inventory The inventory to check.
      * @return True if it will, otherwise false.
      */
-    public static boolean willHandleInventoryEvent(JavaPlugin plugin, Inventory inventory) {
+    public static boolean willHandleInventoryEvent(@Nonnull JavaPlugin plugin, @Nullable Inventory inventory) {
         // If the event should not be ignored (i.e., it is a SpiGUI menu) and
         // if the inventory's holder is an SGMenu owned by the same plugin as
         // this listener, return true to indicate that this listener will
         // handle the event.
         return !shouldIgnoreInventoryEvent(inventory)
-                && Objects.equals(((SGMenu) inventory.getHolder()).getOwner(), plugin);
+                && Objects.equals(((SGMenu) inventory.getHolder()).getOwner(), Objects.requireNonNull(plugin));
     }
 
     /**
@@ -94,7 +98,7 @@ public class SGMenuListener implements Listener {
      * @see SpiGUI#SpiGUI(JavaPlugin)
      */
     @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
+    public void onInventoryClick(@Nonnull InventoryClickEvent event) {
         // This should only run for SpiGUI menus, so if the clicked
         // inventory was not a SpiGUI menu (i.e., an SGMenu), don't
         // continue.
@@ -145,7 +149,8 @@ public class SGMenuListener implements Listener {
             SGToolbarButtonType buttonType = SGToolbarButtonType.getDefaultForSlot(offset);
             SGButton paginationButton = paginationButtonBuilder.buildToolbarButton(
                     offset, clickedGui.getCurrentPage(), buttonType, clickedGui);
-            if (paginationButton != null) paginationButton.getListener().onClick(event);
+            if (paginationButton != null && paginationButton.getListener() != null)
+                paginationButton.getListener().onClick(event);
             return;
         }
 
@@ -172,7 +177,7 @@ public class SGMenuListener implements Listener {
      * @see SpiGUI#SpiGUI(JavaPlugin)
      */
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onAdjacentInventoryClick(InventoryClickEvent event) {
+    public void onAdjacentInventoryClick(@Nonnull InventoryClickEvent event) {
         // If the clicked inventory is not adjacent to a SpiGUI menu, ignore
         // the click event.
         if (event.getView().getTopInventory() == null
@@ -210,7 +215,7 @@ public class SGMenuListener implements Listener {
      * @see SpiGUI#SpiGUI(JavaPlugin)
      */
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onInventoryDrag(InventoryDragEvent event) {
+    public void onInventoryDrag(@Nonnull InventoryDragEvent event) {
 
         // This should only run for SpiGUI menus, so if the clicked
         // inventory was not a SpiGUI menu (i.e., an SGMenu), don't
@@ -238,7 +243,7 @@ public class SGMenuListener implements Listener {
      * @see SpiGUI#SpiGUI(JavaPlugin)
      */
     @EventHandler
-    public void onInventoryClose(InventoryCloseEvent event) {
+    public void onInventoryClose(@Nonnull InventoryCloseEvent event) {
 
         // This should only run for SpiGUI menus, so if the clicked
         // inventory was not a SpiGUI menu (i.e., an SGMenu), don't
@@ -266,7 +271,7 @@ public class SGMenuListener implements Listener {
      * @param slots The set of slots to check.
      * @return True if the set of slots includes any slots in the top inventory, otherwise false.
      */
-    private boolean slotsIncludeTopInventory(InventoryView view, Set<Integer> slots) {
+    private boolean slotsIncludeTopInventory(@Nonnull InventoryView view, @Nonnull Set<Integer> slots) {
         return slots.stream().anyMatch(slot -> {
             // If the slot is bigger than the SpiGUI menu's page size,
             // it's a pagination button, so we'll ignore it.

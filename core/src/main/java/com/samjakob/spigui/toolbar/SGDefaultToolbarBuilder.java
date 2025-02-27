@@ -1,5 +1,8 @@
 package com.samjakob.spigui.toolbar;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.bukkit.Material;
 import org.bukkit.event.Event;
 
@@ -20,8 +23,9 @@ public class SGDefaultToolbarBuilder implements SGToolbarBuilder {
     /** Construct the default implementation of {@link SGToolbarBuilder}. */
     public SGDefaultToolbarBuilder() {}
 
+    @Nullable
     @Override
-    public SGButton buildToolbarButton(int slot, int page, SGToolbarButtonType type, SGMenu menu) {
+    public SGButton buildToolbarButton(int slot, int page, @Nonnull SGToolbarButtonType type, @Nonnull SGMenu menu) {
         switch (type) {
             case PREV_BUTTON:
                 if (menu.getCurrentPage() > 0)

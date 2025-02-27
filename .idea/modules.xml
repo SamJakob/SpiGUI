@@ -2,11 +2,18 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/demo/Projects.SpiGUI.demo.main.iml" filepath="$PROJECT_DIR$/.idea/modules/demo/Projects.SpiGUI.demo.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/SpiGUI.core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/core/SpiGUI.core.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/SpiGUI.core.test.iml" filepath="$PROJECT_DIR$/.idea/modules/core/SpiGUI.core.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/demo/SpiGUI.demo.main.iml" filepath="$PROJECT_DIR$/.idea/modules/demo/SpiGUI.demo.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/demo/SpiGUI.demo.test.iml" filepath="$PROJECT_DIR$/.idea/modules/demo/SpiGUI.demo.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/integration-tests/SpiGUI.integration-tests.test.iml" filepath="$PROJECT_DIR$/.idea/modules/integration-tests/SpiGUI.integration-tests.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/legacy/SpiGUI.legacy.main.iml" filepath="$PROJECT_DIR$/.idea/modules/legacy/SpiGUI.legacy.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/legacy/SpiGUI.legacy.test.iml" filepath="$PROJECT_DIR$/.idea/modules/legacy/SpiGUI.legacy.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/spigui-v2/SpiGUI.spigui-v2.main.iml" filepath="$PROJECT_DIR$/.idea/modules/spigui-v2/SpiGUI.spigui-v2.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/spigui-v2/SpiGUI.spigui-v2.test.iml" filepath="$PROJECT_DIR$/.idea/modules/spigui-v2/SpiGUI.spigui-v2.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/spigui/SpiGUI.spigui.main.iml" filepath="$PROJECT_DIR$/.idea/modules/spigui/SpiGUI.spigui.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/spigui/SpiGUI.spigui.test.iml" filepath="$PROJECT_DIR$/.idea/modules/spigui/SpiGUI.spigui.test.iml" />
     </modules>
   </component>
 </project>

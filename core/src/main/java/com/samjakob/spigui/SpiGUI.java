@@ -25,6 +25,10 @@ import com.samjakob.spigui.toolbar.SGToolbarBuilder;
  */
 public final class SpiGUI {
 
+    static {
+        ensureFactoriesInitialized();
+    }
+
     /** The plugin that owns this instance of SpiGUI. */
     private final JavaPlugin plugin;
 
@@ -238,5 +242,18 @@ public final class SpiGUI {
         }
 
         return foundInventories;
+    }
+
+    /**
+     * Loads the {@code InitializeSpiGUI} class from the version-specific wrapper package that includes the core.
+     *
+     * <p>This allows version-specific implementations to be loaded into factories.
+     */
+    public static void ensureFactoriesInitialized() {
+        try {
+            Class.forName("com.samjakob.spigui.InitializeSpiGUI");
+        } catch (ClassNotFoundException ignored) {
+            /* do nothing */
+        }
     }
 }
