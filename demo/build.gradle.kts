@@ -27,7 +27,7 @@ java {
     targetCompatibility = JavaVersion.VERSION_21
 
     toolchain {
-        languageVersion = JavaLanguageVersion.of(23)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
