@@ -67,7 +67,7 @@ public final class ItemBuilderFactory implements ItemBuilderConstructors {
      */
     public void setConstructors(@Nonnull ItemBuilderConstructors constructors) {
         // Do nothing if the constructors have already been done.
-        if (this.constructors != null) {
+        if (hasConstructors()) {
             return;
         }
 

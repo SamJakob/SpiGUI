@@ -1,5 +1,6 @@
 plugins {
     TestingPlugin
+    Mockito5Plugin
 }
 
 dependencies {

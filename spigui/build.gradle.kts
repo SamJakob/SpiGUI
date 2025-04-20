@@ -1,5 +1,6 @@
 plugins {
     TestingPlugin
+    Mockito4Plugin
 }
 
 dependencies {
@@ -29,12 +30,12 @@ java {
                 srcDirs(core.sourceSets.main.get().allJava.srcDirs)
             }
         }
-    }
-}
 
-val javadocSourceSet = sourceSets.create("javadoc") {
-    resources {
-        srcDirs(core.sourceSets.findByName("javadoc")!!.resources.srcDirs)
+        create("javadoc") {
+            resources {
+                srcDirs(core.sourceSets.findByName("javadoc")!!.resources.srcDirs)
+            }
+        }
     }
 }
 

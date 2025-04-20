@@ -1,10 +1,12 @@
 plugins {
     TestingPlugin
+    Mockito4Plugin
 }
 
 dependencies {
     // JavaX annotations (@Nonnull and @Nullable)
     compileOnly(libraries.annotations.spotbugs)
+    testCompileOnly(libraries.annotations.spotbugs)
 
     // Spigot API
     compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")

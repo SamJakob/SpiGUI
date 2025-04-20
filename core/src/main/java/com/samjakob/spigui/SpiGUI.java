@@ -1,17 +1,20 @@
 package com.samjakob.spigui;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javax.annotation.Nonnull;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.samjakob.spigui.menu.SGMenu;
-import com.samjakob.spigui.menu.SGMenuListener;
+import com.samjakob.spigui.menu.SGMenuListenerBase;
 import com.samjakob.spigui.menu.SGOpenMenu;
-import com.samjakob.spigui.toolbar.SGDefaultToolbarBuilder;
+import com.samjakob.spigui.toolbar.SGDefaultToolbarBuilderFactory;
 import com.samjakob.spigui.toolbar.SGToolbarBuilder;
 
 /**
@@ -25,11 +28,27 @@ import com.samjakob.spigui.toolbar.SGToolbarBuilder;
  */
 public final class SpiGUI {
 
+    /**
+     * The qualified name of the InitializeSpiGUI class.
+     *
+     * <p>This class is included in a {@link SpiGUI} distribution and is initialized once for each "installation" of
+     * SpiGUI to set up version-specific structures and factories.
+     */
+    private static final String INITIALIZER_CLASS = "com.samjakob.spigui.InitializeSpiGUI";
+
+    /**
+     * The qualified name of the class for the SGMenuListener.
+     *
+     * <p>This class is initialized for each instance of {@link SpiGUI}.
+     */
+    private static final String LISTENER_CLASS = "com.samjakob.spigui.menu.SGMenuListener";
+
     static {
         ensureFactoriesInitialized();
     }
 
     /** The plugin that owns this instance of SpiGUI. */
+    @Nonnull
     private final JavaPlugin plugin;
 
     /**
@@ -62,7 +81,8 @@ public final class SpiGUI {
      * <p>This can be overridden per-inventory, as well as per-plugin using the appropriate methods on either the
      * inventory class ({@link SGMenu}) or your plugin's instance of {@link SpiGUI}.
      */
-    private SGToolbarBuilder defaultToolbarBuilder = new SGDefaultToolbarBuilder();
+    private SGToolbarBuilder defaultToolbarBuilder =
+            SGDefaultToolbarBuilderFactory.get().newToolbarBuilder();
 
     /**
      * Creates an instance of the SpiGUI library associated with a given plugin.
@@ -87,15 +107,30 @@ public final class SpiGUI {
      * the downside of this is that each inventory and the listener must now also be registered with the plugin too.
      *
      * <p>Thus, the design whereby this class is registered as a static field on a {@link JavaPlugin} instance and
-     * serves as a proxy for creating ({@link SGMenu}) inventories and an instance of the {@link SGMenuListener}
+     * serves as a proxy for creating ({@link SGMenu}) inventories and an instance of the {@code SGMenuListener}
      * registered with that plugin seemed like a good way to try and minimize the inconvenience of the approach.
      *
      * @param plugin The plugin using SpiGUI.
      */
-    public SpiGUI(JavaPlugin plugin) {
-        this.plugin = plugin;
+    public SpiGUI(@Nonnull JavaPlugin plugin) {
+        this.plugin = Objects.requireNonNull(plugin, "SpiGUI needs to be registered under a plugin.");
 
-        plugin.getServer().getPluginManager().registerEvents(new SGMenuListener(plugin, this), plugin);
+        try {
+            final Class<? extends SGMenuListenerBase> listenerClass =
+                    Class.forName(LISTENER_CLASS).asSubclass(SGMenuListenerBase.class);
+            final SGMenuListenerBase listener =
+                    listenerClass.getDeclaredConstructor(SpiGUI.class).newInstance(this);
+            plugin.getServer().getPluginManager().registerEvents(listener, plugin);
+        } catch (ClassNotFoundException
+                | ClassCastException
+                | NoSuchMethodException
+                | InvocationTargetException
+                | InstantiationException
+                | IllegalAccessException ex) {
+            throw new RuntimeException(String.format(
+                    "Failed to locate and register a valid %s for this Spigot version (%s).",
+                    LISTENER_CLASS, Bukkit.getVersion()));
+        }
     }
 
     /**
@@ -147,7 +182,17 @@ public final class SpiGUI {
      * @return The created inventory.
      */
     public SGMenu create(String name, int rows, String tag) {
-        return new SGMenu(plugin, this, name, rows, tag);
+        return new SGMenu(this, name, rows, tag);
+    }
+
+    /**
+     * Returns the plugin that this instance of SpiGUI was registered with.
+     *
+     * @return the plugin for this SpiGUI instance.
+     */
+    @Nonnull
+    public JavaPlugin getOwner() {
+        return this.plugin;
     }
 
     /**
@@ -251,9 +296,12 @@ public final class SpiGUI {
      */
     public static void ensureFactoriesInitialized() {
         try {
-            Class.forName("com.samjakob.spigui.InitializeSpiGUI");
+            // This is sufficient for loading the class and having the static initialization blocks run.
+            Class.forName(INITIALIZER_CLASS);
         } catch (ClassNotFoundException ignored) {
-            /* do nothing */
+            throw new RuntimeException(String.format(
+                    "Failed to locate and register a valid %s for this Spigot version (%s).",
+                    INITIALIZER_CLASS, Bukkit.getVersion()));
         }
     }
 }

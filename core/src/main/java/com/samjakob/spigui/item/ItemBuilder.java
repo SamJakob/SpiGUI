@@ -71,6 +71,7 @@ public final class ItemBuilder implements ItemBuilderBase {
      * @param material type of stack to create a builder for.
      * @return the constructed {@link ItemBuilder}.
      */
+    @Nonnull
     public static ItemBuilder create(@Nonnull Material material) {
         return new ItemBuilder(ItemBuilderBase.create(material));
     }
@@ -100,6 +101,7 @@ public final class ItemBuilder implements ItemBuilderBase {
      * @param stack to derive the builder options from.
      * @return the constructed {@link ItemBuilder}.
      */
+    @Nonnull
     public static ItemBuilder from(@Nonnull ItemStack stack) {
         return new ItemBuilder(ItemBuilderBase.from(stack));
     }

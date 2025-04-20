@@ -2,10 +2,30 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="21">
-      <module name="com.samjakob.SpiGUI.demo.main" target="23" />
-      <module name="com.samjakob.SpiGUI.demo.test" target="23" />
       <module name="SpiGUI.demo.main" target="23" />
       <module name="SpiGUI.demo.test" target="23" />
     </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="SpiGUI.core" options="-Xlint:all -Werror" />
+      <module name="SpiGUI.core.javadoc" options="-Xlint:all -Werror" />
+      <module name="SpiGUI.core.main" options="-Xlint:all -Werror" />
+      <module name="SpiGUI.core.test" options="-Xlint:all -Werror" />
+      <module name="SpiGUI.demo" options="-Xlint:all -Werror" />
+      <module name="SpiGUI.integration-tests" options="-Xlint:all -Werror" />
+      <module name="SpiGUI.integration-tests.main" options="-Xlint:all -Werror" />
+      <module name="SpiGUI.integration-tests.test" options="-Xlint:all -Werror" />
+      <module name="SpiGUI.spigui" options="-Xlint:all -Werror" />
+      <module name="SpiGUI.spigui-v2" options="-Xlint:all -Werror" />
+      <module name="SpiGUI.spigui-v2.javadoc" options="-Xlint:all -Werror" />
+      <module name="SpiGUI.spigui-v2.main" options="-Xlint:all -Werror" />
+      <module name="SpiGUI.spigui-v2.test" options="-Xlint:all -Werror" />
+      <module name="SpiGUI.spigui.javadoc" options="-Xlint:all -Werror" />
+      <module name="SpiGUI.spigui.main" options="-Xlint:all -Werror" />
+      <module name="SpiGUI.spigui.test" options="-Xlint:all -Werror" />
+      <module name="com.samjakob.SpiGUI.demo.main" options="-Xlint:all -Werror" />
+      <module name="com.samjakob.SpiGUI.demo.test" options="-Xlint:all -Werror" />
+    </option>
   </component>
 </project>

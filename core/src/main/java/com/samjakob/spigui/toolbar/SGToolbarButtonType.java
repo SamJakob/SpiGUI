@@ -1,11 +1,8 @@
 package com.samjakob.spigui.toolbar;
 
-import java.util.AbstractMap;
-import java.util.Collections;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.*;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Represents pre-defined types for toolbar buttons. These can be used to easily re-define the buttons used in a
@@ -14,40 +11,73 @@ import javax.annotation.Nonnull;
 public enum SGToolbarButtonType {
 
     /** The "previous page" pagination button. */
-    PREV_BUTTON,
+    PREV_BUTTON(3),
 
     /** The "current page" indicator button (doesn't necessarily have an action associated). */
-    CURRENT_BUTTON,
+    CURRENT_BUTTON(4),
 
     /** The "next page" pagination button. */
-    NEXT_BUTTON,
+    NEXT_BUTTON(5),
 
     /** No pre-defined action or button. */
-    UNASSIGNED;
+    UNASSIGNED(null);
+
+    /** The default slot for the button, or null. */
+    @Nullable
+    private final Integer defaultSlot;
 
     /**
-     * The default mappings between slot number and {@link SGToolbarButtonType}. This intended for use in setting (or
-     * falling back to) defaults for toolbar buttons, or for minor tweaks to existing buttons in a toolbar, as opposed
-     * to entirely new custom toolbars.
+     * A pre-defined toolbar type mapping. These can be used to easily re-define the buttons used in a toolbar, without
+     * creating an entirely custom toolbar implementation.
+     *
+     * @param defaultSlot to position the button with the specified type in (or null).
      */
-    @Nonnull
-    private static final Map<Integer, SGToolbarButtonType> DEFAULT_MAPPINGS = Collections.unmodifiableMap(Stream.of(
-                    new AbstractMap.SimpleImmutableEntry<>(3, PREV_BUTTON),
-                    new AbstractMap.SimpleImmutableEntry<>(4, CURRENT_BUTTON),
-                    new AbstractMap.SimpleImmutableEntry<>(5, NEXT_BUTTON))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+    SGToolbarButtonType(@Nullable Integer defaultSlot) {
+        this.defaultSlot = defaultSlot;
+    }
 
     /**
-     * Returns the default mapping between a given toolbar slot number (from 0 to 8), and {@link SGToolbarButtonType}.
-     * This intended for use in setting (or falling back to) defaults for toolbar buttons, or for minor tweaks to
+     * Returns the default slot mapping for the given toolbar button type.
+     *
+     * @return the default slot for the toolbar button type.
+     */
+    @Nullable
+    public Integer getDefaultSlot() {
+        return defaultSlot;
+    }
+
+    /**
+     * Convenience method that unboxes {@link #getDefaultSlot()} after null-checking it. Use this method when you can
+     * guarantee that the type should have an assigned slot (i.e., that it will never be {@link #UNASSIGNED}).
+     *
+     * <p>If in doubt, use {@link #getDefaultSlot()} and handle the case where it is null.
+     *
+     * @return the default slot.
+     * @throws NullPointerException if the button type does not have a default slot assigned (i.e.,
+     *     {@link #UNASSIGNED}).
+     */
+    public int requireDefaultSlot() {
+        return Objects.requireNonNull(
+                defaultSlot, "#requireDefaultSlot called but the button did not have a default slot.");
+    }
+
+    /**
+     * Returns the default button type for a slot, given the mapping between a given toolbar slot number (from 0 to 8),
+     * and {@link SGToolbarButtonType}.
+     *
+     * <p>This intended for use in setting (or falling back to) defaults for toolbar buttons, or for minor tweaks to
      * existing buttons in a toolbar, as opposed to entirely new custom toolbars.
      *
-     * @param slot The slot number to get the default button type mapping for.
+     * @param slot to get the default button type mapping for.
      * @return The default button type mapping for the specified slot. Alternatively,
      *     {@link SGToolbarButtonType#UNASSIGNED} if there isn't one.
      */
     @Nonnull
     public static SGToolbarButtonType getDefaultForSlot(int slot) {
-        return DEFAULT_MAPPINGS.getOrDefault(slot, SGToolbarButtonType.UNASSIGNED);
+        return Arrays.stream(values())
+                .filter(type -> type.defaultSlot != null)
+                .filter(type -> type.defaultSlot == slot)
+                .findFirst()
+                .orElse(SGToolbarButtonType.UNASSIGNED);
     }
 }

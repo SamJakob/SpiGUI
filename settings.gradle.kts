@@ -8,7 +8,7 @@ dependencyResolutionManagement {
             library("spigot_v1", "org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
             library("spigot_v2", "org.spigotmc:spigot-api:1.21.4-R0.1-SNAPSHOT")
 
-            library("mockbukkit", "org.mockbukkit.mockbukkit:mockbukkit-v1.21:4.33.5")
+            library("mockbukkit", "org.mockbukkit.mockbukkit:mockbukkit-v1.21:4.34.1")
         }
     }
 }

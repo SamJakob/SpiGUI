@@ -4,7 +4,7 @@ import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.task
+import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 
 const val SOURCES_QUALIFIER = "sources"
@@ -57,7 +57,7 @@ fun Project.definePublishableArtifacts(name: String, projectName: String): Publi
         }
     }
 
-    val jar = task<Jar>(name) {
+    val jar = tasks.register<Jar>(name) {
         archiveBaseName.set(name)
 
         from(mainSourceSet.output) {
@@ -66,7 +66,7 @@ fun Project.definePublishableArtifacts(name: String, projectName: String): Publi
     }
 
     val sourcesJarTaskName = "%s-%s".format(name, SOURCES_QUALIFIER)
-    val sourcesJar = task<Jar>(sourcesJarTaskName) {
+    val sourcesJar = tasks.register<Jar>(sourcesJarTaskName) {
         archiveBaseName.set(name)
         archiveClassifier.set(SOURCES_QUALIFIER)
 
@@ -82,7 +82,7 @@ fun Project.definePublishableArtifacts(name: String, projectName: String): Publi
     }
 
     val javadocJarTaskName = "%s-%s".format(name, JAVADOC_QUALIFIER)
-    val javadocJar = task<Jar>(javadocJarTaskName) {
+    val javadocJar = tasks.register<Jar>(javadocJarTaskName) {
         archiveBaseName.set(name)
         archiveClassifier.set(JAVADOC_QUALIFIER)
 
@@ -90,9 +90,9 @@ fun Project.definePublishableArtifacts(name: String, projectName: String): Publi
     }
 
     return PublishableJarArtifactSet(
-        PublishableJarArtifact(name, null, jar),
-        PublishableJarArtifact(sourcesJarTaskName, SOURCES_QUALIFIER, sourcesJar),
-        PublishableJarArtifact(javadocJarTaskName, JAVADOC_QUALIFIER, javadocJar),
+        PublishableJarArtifact(name, null, jar.get()),
+        PublishableJarArtifact(sourcesJarTaskName, SOURCES_QUALIFIER, sourcesJar.get()),
+        PublishableJarArtifact(javadocJarTaskName, JAVADOC_QUALIFIER, javadocJar.get()),
     )
 
 }

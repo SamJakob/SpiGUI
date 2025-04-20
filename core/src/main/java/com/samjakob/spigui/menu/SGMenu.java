@@ -10,6 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -33,10 +34,6 @@ import com.samjakob.spigui.toolbar.SGToolbarButtonType;
  * {@link SpiGUI#SpiGUI(JavaPlugin)} class constructor implementation notes.
  */
 public class SGMenu implements InventoryHolder {
-
-    /** The plugin (owner of the SpiGUI instance) that created this inventory. */
-    @Nonnull
-    private final JavaPlugin owner;
 
     /** The SpiGUI instance that created this inventory. */
     @Nonnull
@@ -101,7 +98,7 @@ public class SGMenu implements InventoryHolder {
     // Event handlers
 
     /** The action to be performed on close. */
-    private Consumer<SGMenu> onClose;
+    private Consumer<InventoryCloseEvent> onClose;
 
     /** The action to be performed on page change. */
     private Consumer<SGMenu> onPageChange;
@@ -129,21 +126,13 @@ public class SGMenu implements InventoryHolder {
      *
      * <p>The name parameter is color code translated.
      *
-     * @param owner The JavaPlugin that owns this menu.
      * @param spiGUI The SpiGUI instance associated with this menu.
      * @param name The name of the menu.
      * @param rowsPerPage The number of rows per page in the menu.
      * @param tag The tag associated with this menu.
      * @param clickTypes The set of permitted click types.
      */
-    public SGMenu(
-            @Nonnull JavaPlugin owner,
-            @Nonnull SpiGUI spiGUI,
-            String name,
-            int rowsPerPage,
-            String tag,
-            @Nullable ClickType... clickTypes) {
-        this.owner = Objects.requireNonNull(owner);
+    public SGMenu(@Nonnull SpiGUI spiGUI, String name, int rowsPerPage, String tag, @Nullable ClickType... clickTypes) {
         this.spiGUI = Objects.requireNonNull(spiGUI);
         this.name = ChatColor.translateAlternateColorCodes('&', name);
         this.rowsPerPage = rowsPerPage;
@@ -177,7 +166,7 @@ public class SGMenu implements InventoryHolder {
      * @see SpiGUI#areDefaultInteractionsBlocked()
      * @return Whether the default behavior of click events should be cancelled.
      */
-    public Boolean areDefaultInteractionsBlocked() {
+    public boolean areDefaultInteractionsBlocked() {
         return blockDefaultInteractions;
     }
 
@@ -232,7 +221,7 @@ public class SGMenu implements InventoryHolder {
      */
     @Nonnull
     public JavaPlugin getOwner() {
-        return owner;
+        return spiGUI.getOwner();
     }
 
     // -- INVENTORY SIZE -- //
@@ -456,7 +445,16 @@ public class SGMenu implements InventoryHolder {
      * Returns the current page of the inventory. This is the page that will be displayed when the inventory is opened
      * and displayed to a player (i.e. rendered).
      *
+     * <p>The value returned by {@code getCurrentPage} and accepted by {@link #setCurrentPage(int)} is zero-indexed -
+     * that is, the first page is 0. The analogue for getting the maximum page is {@link #getMaxPageIndex()} (rather
+     * than {@link #getMaxPage()} which is now deprecated).
+     *
+     * <p>Unfortunately, the historic behavior for {@link #getMaxPage()} is confusingly that it would be one-indexed not
+     * zero-indexed - hence the deprecation (for clarity) - and it is anticipated that simply changing the behavior of
+     * that method would be subtle yet disastrous.
+     *
      * @return The current page of the inventory.
+     * @see #getMaxPageIndex()
      */
     public int getCurrentPage() {
         return currentPage;
@@ -476,9 +474,38 @@ public class SGMenu implements InventoryHolder {
     /**
      * Gets the page number of the final page of the GUI.
      *
+     * <p>This method is now an alias for {@link #getMaxPageNumber()}.
+     *
      * @return The highest page number that can be viewed.
+     * @deprecated this method is ambiguous with regard to indexing (confusingly, this method is the one-indexed value
+     *     for the maximum page whilst {@link #getCurrentPage()} is the zero-indexed value) - use
+     *     {@link #getMaxPageIndex()} or {@link #getMaxPageNumber()} (the latter has the same behavior) instead to
+     *     receive the expected value.
      */
+    @Deprecated
     public int getMaxPage() {
+        return getMaxPageNumber();
+    }
+
+    /**
+     * Get the maximum page index that can be displayed (starting at 0).
+     *
+     * <p>For example, an empty inventory would have a maximum page index of 0 and a maximum page number of 1.
+     *
+     * @return the maximum page index.
+     * @see #getMaxPageNumber()
+     */
+    public int getMaxPageIndex() {
+        return getMaxPageNumber() - 1;
+    }
+
+    /**
+     * Get the maximum page (natural) number that can be displayed (starting at 1).
+     *
+     * @return the maximum page number.
+     * @see #getMaxPageIndex()
+     */
+    public int getMaxPageNumber() {
         return (int) Math.ceil(((double) getHighestFilledSlot() + 1) / ((double) getPageSize()));
     }
 
@@ -506,7 +533,7 @@ public class SGMenu implements InventoryHolder {
      * @return Whether the page could be changed (false means the max page is currently open).
      */
     public boolean nextPage(HumanEntity viewer) {
-        if (currentPage < getMaxPage() - 1) {
+        if (currentPage < getMaxPageIndex()) {
             currentPage++;
             refreshInventory(viewer);
             if (this.onPageChange != null) this.onPageChange.accept(this);
@@ -604,7 +631,7 @@ public class SGMenu implements InventoryHolder {
      * @return The action to be performed on close.
      * @see #setOnClose(Consumer)
      */
-    public Consumer<SGMenu> getOnClose() {
+    public Consumer<InventoryCloseEvent> getOnClose() {
         return this.onClose;
     }
 
@@ -614,7 +641,7 @@ public class SGMenu implements InventoryHolder {
      *
      * @param onClose The action to be performed on close.
      */
-    public void setOnClose(Consumer<SGMenu> onClose) {
+    public void setOnClose(Consumer<InventoryCloseEvent> onClose) {
         this.onClose = onClose;
     }
 
@@ -762,14 +789,14 @@ public class SGMenu implements InventoryHolder {
                 || viewer.getOpenInventory().getTopInventory().getHolder() != this) return;
 
         // If the new size is different, we'll need to open a new inventory.
-        if (viewer.getOpenInventory().getTopInventory().getSize() != getPageSize() + (getMaxPage() > 0 ? 9 : 0)) {
+        if (viewer.getOpenInventory().getTopInventory().getSize() != getPageSize() + (getMaxPageNumber() > 0 ? 9 : 0)) {
             viewer.openInventory(getInventory());
             return;
         }
 
         // If the name has changed, we'll need to open a new inventory.
         String newName = name.replace("{currentPage}", String.valueOf(currentPage + 1))
-                .replace("{maxPage}", String.valueOf(getMaxPage()));
+                .replace("{maxPage}", String.valueOf(getMaxPageNumber()));
         if (!viewer.getOpenInventory().getTitle().equals(newName)) {
             viewer.openInventory(getInventory());
             return;
@@ -792,7 +819,7 @@ public class SGMenu implements InventoryHolder {
             isAutomaticPaginationEnabled = isAutomaticPaginationEnabled();
         }
 
-        boolean needsPagination = getMaxPage() > 0 && isAutomaticPaginationEnabled;
+        boolean needsPagination = getMaxPageNumber() > 0 && isAutomaticPaginationEnabled;
 
         Inventory inventory = Bukkit.createInventory(
                 this,
@@ -802,7 +829,7 @@ public class SGMenu implements InventoryHolder {
                         // Pagination not required or disabled.
                         : getPageSize()),
                 name.replace("{currentPage}", String.valueOf(currentPage + 1))
-                        .replace("{maxPage}", String.valueOf(getMaxPage())));
+                        .replace("{maxPage}", String.valueOf(getMaxPageNumber())));
 
         // Add the main inventory items.
         for (int key = currentPage * getPageSize(); key < (currentPage + 1) * getPageSize(); key++) {

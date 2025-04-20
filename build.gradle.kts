@@ -184,10 +184,10 @@ publishing {
     }
 }
 
-//if (hasSonatypeCredentials) {
-//    signing {
-//        useGpgCmd()
-//        sign(publishing.publications["SpiGUI"])
-//        sign(publishing.publications["SpiGUI-v2"])
-//    }
-//}
+if (hasSonatypeCredentials) {
+    signing {
+        useGpgCmd()
+        sign(publishing.publications["SpiGUI"])
+        sign(publishing.publications["SpiGUI-v2"])
+    }
+}
